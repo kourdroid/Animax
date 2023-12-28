@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.className} bg-black overflow-x-hidden`}>
         <div className="w-full h-80 flex flex-col items-center justify-center gap-10 border border-white border-opacity-10 bg-anime">
-          <div className="absolute h-80 opacity-30 z-0 inset-0">
+          <div className="absolute h-80 opacity-20 z-0 inset-0">
             <video
             
               src="/background.mp4"
