@@ -35,13 +35,13 @@ export default function RootLayout({ children }) {
           <Search />
           <nav className="z-10 flex w-full mx-auto ">
             <ul className="text-sm mx-auto w-4/5 md:text-base text-white px-5 flex flex-wrap justify-center gap-3 md:w-2/3 ">
-              <li className="bg-white bg-opacity-10 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
+              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
                 <Link href="/upcoming">Upcoming Anime</Link>
               </li>
-              <li className="bg-white bg-opacity-10 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
+              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-40 flex justify-center items-center text-center py-3 rounded-full">
                 <Link href="/top_characters">Top Characters</Link>
               </li>
-              <li className="bg-white bg-opacity-10 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
+              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-40 flex justify-center items-center text-center py-3 rounded-full">
                 <Link href="/top_manga">Top Manga</Link>
               </li>
             </ul>

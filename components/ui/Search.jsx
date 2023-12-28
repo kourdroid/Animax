@@ -8,7 +8,7 @@ function search() {
       <input
         type="text"
         placeholder="Naruto Shippudden"
-        className="h-12 w-full text-sm md:text-lg text-center text-white  bg-black bg-opacity-30 rounded-full outline-none border border-white border-opacity-10"
+        className="h-12 w-full text-sm md:text-lg text-center text-white  bg-black bg-opacity-50 rounded-full outline-none border border-white border-opacity-10"
       />
     </div>
   );
