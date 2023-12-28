@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaStar, FaHeart } from "react-icons/fa";
+import { FaStar, FaHeart, FaSadTear } from "react-icons/fa";
+
 
 async function page({ params }) {
   const response = await fetch(
@@ -72,18 +73,27 @@ async function page({ params }) {
       </div>
       {/* trailer */}
       <div className="w-full flex justify-center items-center mx-auto rounded-lg">
-        <div className="aspect-video w-full">
-          <iframe
-            width="560"
-            height="315"
-            src={`${animeData.data.trailer.embed_url}?rel=0`}
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; "
-            allowfullscreen
-            className="w-full h-full aspect-video rounded-lg"
-          ></iframe>
-        </div>
+        {animeData.data.trailer.embed_url == null ? (
+          <div className="w-full aspect-video bg-gradient-to-tr from-[#ffffff17] to-[#ffffff08]  rounded-lg flex justify-center items-center text-xl">
+            <div className="flex flex-col justify-center items-center gap-5">
+              <FaSadTear className="text-6xl " />
+              <div className="text-3xl font-bold">There is no Trailer</div>
+            </div>
+          </div>
+        ) : (
+          <div className="aspect-video w-full">
+            <iframe
+              width="560"
+              height="315"
+              src={`${animeData.data.trailer.embed_url}?rel=0`}
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; "
+              allowfullscreen
+              className="w-full h-full aspect-video rounded-lg"
+            ></iframe>
+          </div>
+        )}
       </div>
     </div>
   );
