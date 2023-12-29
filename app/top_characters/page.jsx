@@ -10,57 +10,25 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
 
-  const lastAnimeElementRef = useCallback(
-    (node) => {
-      if (isLoading || !node) return;
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const targetEntry = entries.find(
-            (entry) => entry.isIntersecting && entry.target === node
-          );
 
-          if (targetEntry) {
-            setIsLoading(true);
-            setPage((prevPage) => prevPage + 1);
-          }
-        },
-        {
-          root: null, // Use the viewport as the root
-          rootMargin: "0px", // No margin
-          threshold: 0.5, // Trigger when 50% of the element is visible
-        }
-      );
 
-      observer.observe(node);
-
-      // Cleanup the observer when the component unmounts
-      return () => {
-        observer.disconnect();
-      };
-    },
-    [isLoading]
-  );
-
-const fetchData = async () => {
+const fetchData = useCallback(async () => {
   try {
     const response = await fetch(
       `https://api.jikan.moe/v4/top/characters?page=${page}`
     );
     const responseData = await response.json();
 
-    // Extract unique anime entries based on their IDs
     const uniqueAnimeData = responseData.data.filter(
       (item) => !fetchedAnimeIds.has(item.mal_id)
     );
 
-    // Update the set of fetched anime IDs
     setFetchedAnimeIds(
       (prevIds) =>
         new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
     );
 
-    // Remove duplicates from the animeData state
     setAnimeData((prevData) => {
       const newData = [...prevData, ...uniqueAnimeData];
       const uniqueData = Array.from(
@@ -71,11 +39,42 @@ const fetchData = async () => {
   } finally {
     setIsLoading(false);
   }
-};
+}, [page, fetchedAnimeIds]);
 
-  useEffect(() => {
-    fetchData();
-  }, [page, fetchData]);
+const lastAnimeElementRef = useCallback(
+  (node) => {
+    if (isLoading || !node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const targetEntry = entries.find(
+          (entry) => entry.isIntersecting && entry.target === node
+        );
+
+        if (targetEntry) {
+          setIsLoading(true);
+          setPage((prevPage) => prevPage + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.5,
+      }
+    );
+
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+    };
+  },
+  [isLoading]
+);
+
+useEffect(() => {
+  fetchData();
+}, [page, fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
