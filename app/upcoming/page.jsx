@@ -18,11 +18,14 @@ export default async function page() {
           >
             <div className="absolute inset-0 bg-white h-0.5 opacity-10"></div>
             <div className="w-full md:w-1/2 mx-auto md:max-w-1/3 ">
-              <img
-                className="object-cover w-full aspect-square md:aspect-portrait rounded-lg"
-                src={item.images.webp.large_image_url}
-                alt=""
-              />
+            <Image
+              className="object-cover w-full aspect-square md:aspect-portrait rounded-lg"
+              src={item.images.webp.large_image_url}
+              alt=""
+              width={300}
+              height={300}
+            />
+
             </div>
             <div className="w-full flex-col space-y-2">
               <div className="bg-red-600 w-max px-2 py-0.5 rounded">

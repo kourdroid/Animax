@@ -1,7 +1,8 @@
 'use client'
 import { FaArrowUp } from "react-icons/fa";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const [animeData, setAnimeData] = useState([]);
@@ -9,7 +10,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
 
-  const observer = useRef();
+
 
 const lastAnimeElementRef = useCallback(
   (node) => {
@@ -110,10 +111,12 @@ const fetchData = async () => {
             ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
             <Link href={item.mal_id.toString()}>
-              <img
+              <Image
                 src={item.images.jpg.large_image_url}
                 className="rounded-xl aspect-portrait w-full"
                 alt={item.title}
+                width={300}
+                height={300}
               />
             </Link>
             <Link

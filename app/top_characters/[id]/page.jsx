@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaStar, FaHeart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 
 async function page({ params }) {
   const response = await fetch(

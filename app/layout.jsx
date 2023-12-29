@@ -1,8 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import background from "@/public/background.webp";
-import Image from "next/image";
 import Search from "@/components/ui/Search";
 
 
