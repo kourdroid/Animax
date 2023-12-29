@@ -73,9 +73,9 @@ async function page({ params }) {
         <div className="absolute bottom-0 left-0 right-0 w-10 mx-auto h-1 bg-red-600"></div>
       </div>
       <div className="flex justify-between items-center gap-2 flex-wrap">
-        {picImages.data.map((item) => (
+        {picImages.data.map((item, index) => (
           <img
-            key={item.jpg}
+            key={index}
             className="max-w-40 rounded-lg"
             src={item.jpg.image_url}
           />

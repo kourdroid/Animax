@@ -19,8 +19,8 @@ const fetchData = useCallback(async () => {
       `https://api.jikan.moe/v4/top/characters?page=${page}`
     );
     const responseData = await response.json();
-
-    const uniqueAnimeData = responseData.data.filter(
+const animeArray = Array.isArray(responseData.data) ? responseData.data : [];
+    const uniqueAnimeData = animeArray.filter(
       (item) => !fetchedAnimeIds.has(item.mal_id)
     );
 
