@@ -62,8 +62,8 @@ export default async function page() {
                 {item.trailer.embed_url == null ? (
                   <div className="w-full aspect-video bg-white bg-opacity-10  rounded-lg flex justify-center items-center text-xl">
                     <div className="flex flex-col justify-center items-center gap-5">
-                      <FaSadTear className="text-6xl "/>
-                    <div>there is noe trailer yet</div>
+                      <FaSadTear className="text-6xl " />
+                      <div>there is noe trailer yet</div>
                     </div>
                   </div>
                 ) : (
@@ -81,6 +81,7 @@ export default async function page() {
           </div>
         ))}
       </div>
+      
     </div>
   );
 }

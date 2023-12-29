@@ -7,6 +7,7 @@ export default function Home() {
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
 
   const observer = useRef();
 
@@ -26,15 +27,14 @@ export default function Home() {
           }
         },
         {
-          root: null, // Use the viewport as the root
-          rootMargin: "0px", // No margin
-          threshold: 0.5, // Trigger when 50% of the element is visible
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.5,
         }
       );
 
       observer.observe(node);
 
-      // Cleanup the observer when the component unmounts
       return () => {
         observer.disconnect();
       };
@@ -42,17 +42,38 @@ export default function Home() {
     [isLoading]
   );
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `https://api.jikan.moe/v4/top/characters?page=${page}`
-      );
-      const responseData = await response.json();
-      setAnimeData((prevData) => [...prevData, ...responseData.data]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const fetchData = async () => {
+  try {
+    const response = await fetch(
+      `https://api.jikan.moe/v4/recommendations/anime?page=${page}`
+    );
+    const responseData = await response.json();
+
+    // Extract unique anime entries based on their IDs
+    const uniqueAnimeData = responseData.data.filter(
+      (item) => !fetchedAnimeIds.has(item.mal_id)
+    );
+
+    // Update the set of fetched anime IDs
+    setFetchedAnimeIds(
+      (prevIds) =>
+        new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
+    );
+
+    // Remove duplicates from the animeData state
+    setAnimeData((prevData) => {
+      const newData = [...prevData, ...uniqueAnimeData];
+      const uniqueData = Array.from(
+        new Set(newData.map((item) => item.mal_id))
+      ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+      return uniqueData;
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
 
   useEffect(() => {
     fetchData();
@@ -69,7 +90,7 @@ export default function Home() {
     <main className="container mx-auto">
       <div className="relative w-max mx-auto">
         <h2 className="text-center text-2xl text-white w-max px-5 py-2 mx-auto font-bold my-10">
-          Top haracters
+          Popular Anime
         </h2>
         <div className="absolute bottom-0 left-0 right-0 w-32 mx-auto h-1 bg-red-600"></div>
       </div>
@@ -80,18 +101,30 @@ export default function Home() {
             className="relative flex flex-col justify-between items-center"
             ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
-            <Link href={`top_characters/${item.mal_id.toString()}`}>
+            <Link
+              className="relative overflow-hidden w-full rounded-lg aspect-portrait"
+              href={item.mal_id.toString()}
+            >
+              <div className="absolute inset-0  transition-all duration-300 ease-out hover:block z-0 bg-black flex flex-col justify-start items-center px-5 py-8 gap-5">
+                <h3 className="text-xl font-bold text-center">
+                  {item.entry[0].title}
+                </h3>
+                <p className="text-sm overflow-hidden max-h-60 line-clamp-3 md:line-clamp-6">
+                  {item.content}
+                </p>
+              </div>
               <img
-                src={item.images.webp.image_url}
-                className="rounded-xl w-full aspect-portrait"
-                alt={item.name}
+                src={item.entry[0].images.jpg.large_image_url}
+                className="absolute inset-0 opacity-100 hover:opacity-20 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+                alt={item.entry[0].title}
               />
             </Link>
+
             <Link
               href={item.mal_id.toString()}
               className="text-center font-semibold tracking-wide py-2 mx-auto"
             >
-              {item.name}
+              {item.entry[0].title}
             </Link>
           </div>
         ))}

@@ -9,6 +9,7 @@ export default function page() {
   const [mangaData, setMangaData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
 
   const observer = useRef();
 
@@ -45,12 +46,30 @@ const fetchData = async () => {
       `https://api.jikan.moe/v4/top/manga?page=${page}`
     );
     const responseData = await response.json();
-    setMangaData((prevData) => [...prevData, ...responseData.data]);
+
+    // Extract unique anime entries based on their IDs
+    const uniqueAnimeData = responseData.data.filter(
+      (item) => !fetchedAnimeIds.has(item.mal_id)
+    );
+
+    // Update the set of fetched anime IDs
+    setFetchedAnimeIds(
+      (prevIds) =>
+        new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
+    );
+
+    // Remove duplicates from the animeData state
+    setMangaData((prevData) => {
+      const newData = [...prevData, ...uniqueAnimeData];
+      const uniqueData = Array.from(
+        new Set(newData.map((item) => item.mal_id))
+      ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+      return uniqueData;
+    });
   } finally {
     setIsLoading(false);
   }
 };
-
 
   useEffect(() => {
     fetchData();
@@ -83,7 +102,7 @@ const fetchData = async () => {
                 width={300}
                 height={300}
                 src={item.images.jpg.large_image_url}
-                className="rounded-xl"
+                className="rounded-xl aspect-portrait w-full"
                 alt={item.title}
               />
             </Link>

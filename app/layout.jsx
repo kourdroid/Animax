@@ -38,6 +38,9 @@ export default function RootLayout({ children }) {
               <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
                 <Link href="/upcoming">Upcoming Anime</Link>
               </li>
+              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
+                <Link href="/random_anime">Random Anime</Link>
+              </li>
               <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-40 flex justify-center items-center text-center py-3 rounded-full">
                 <Link href="/top_characters">Top Characters</Link>
               </li>
