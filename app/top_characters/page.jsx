@@ -7,8 +7,7 @@ export default function Home() {
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
-
-  const observer = useRef();
+  const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
 
   const lastAnimeElementRef = useCallback(
     (node) => {
@@ -42,17 +41,36 @@ export default function Home() {
     [isLoading]
   );
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `https://api.jikan.moe/v4/top/characters?page=${page}`
-      );
-      const responseData = await response.json();
-      setAnimeData((prevData) => [...prevData, ...responseData.data]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const fetchData = async () => {
+  try {
+    const response = await fetch(
+      `https://api.jikan.moe/v4/top/characters?page=${page}`
+    );
+    const responseData = await response.json();
+
+    // Extract unique anime entries based on their IDs
+    const uniqueAnimeData = responseData.data.filter(
+      (item) => !fetchedAnimeIds.has(item.mal_id)
+    );
+
+    // Update the set of fetched anime IDs
+    setFetchedAnimeIds(
+      (prevIds) =>
+        new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
+    );
+
+    // Remove duplicates from the animeData state
+    setAnimeData((prevData) => {
+      const newData = [...prevData, ...uniqueAnimeData];
+      const uniqueData = Array.from(
+        new Set(newData.map((item) => item.mal_id))
+      ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+      return uniqueData;
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchData();
@@ -80,11 +98,23 @@ export default function Home() {
             className="relative flex flex-col justify-between items-center"
             ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
-            <Link href={`top_characters/${item.mal_id.toString()}`}>
+            <Link
+              className="relative overflow-hidden w-full rounded-lg aspect-portrait"
+              href={`top_characters/${item.mal_id.toString()}`}
+            >
+              <div className="absolute inset-0  transition-all duration-300 ease-out hover:block z-0 bg-black flex flex-col justify-start items-center px-5 py-8 gap-3">
+                <h3 className="text-xl font-bold text-center">{item.name}</h3>
+                <h4 className="text-xl font-bold text-center">
+                  {item.name_kanji}
+                </h4>
+                <p className="text-sm overflow-hidden max-h-full line-clamp-3 md:line-clamp-4">
+                  {item.about}
+                </p>
+              </div>
               <img
-                src={item.images.webp.image_url}
-                className="rounded-xl w-full aspect-portrait"
-                alt={item.name}
+                src={item.images.jpg.image_url}
+                className="absolute inset-0 opacity-100 hover:opacity-20 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+                alt={item.title}
               />
             </Link>
             <Link
