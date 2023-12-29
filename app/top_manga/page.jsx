@@ -73,7 +73,7 @@ const fetchData = async () => {
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({

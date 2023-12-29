@@ -1,6 +1,6 @@
 "use client";
 import { FaArrowUp } from "react-icons/fa";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 
 export default function Home() {
@@ -74,7 +74,7 @@ const fetchData = async () => {
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({

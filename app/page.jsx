@@ -51,34 +51,41 @@ const fetchData = async () => {
     );
     const responseData = await response.json();
 
-    // Extract unique anime entries based on their IDs
-    const uniqueAnimeData = responseData.data.filter(
-      (item) => !fetchedAnimeIds.has(item.mal_id)
-    );
+    // Check if responseData.data exists and is an array
+    if (responseData.data && Array.isArray(responseData.data)) {
+      // Extract unique anime entries based on their IDs
+      const uniqueAnimeData = responseData.data.filter(
+        (item) => !fetchedAnimeIds.has(item.mal_id)
+      );
 
-    // Update the set of fetched anime IDs
-    setFetchedAnimeIds(
-      (prevIds) =>
-        new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
-    );
+      // Update the set of fetched anime IDs
+      setFetchedAnimeIds(
+        (prevIds) =>
+          new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
+      );
 
-    // Remove duplicates from the animeData state
-    setAnimeData((prevData) => {
-      const newData = [...prevData, ...uniqueAnimeData];
-      const uniqueData = Array.from(
-        new Set(newData.map((item) => item.mal_id))
-      ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
-      return uniqueData;
-    });
+      // Remove duplicates from the animeData state
+      setAnimeData((prevData) => {
+        const newData = [...prevData, ...uniqueAnimeData];
+        const uniqueData = Array.from(
+          new Set(newData.map((item) => item.mal_id))
+        ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+        return uniqueData;
+      });
+    } else {
+      // Handle the case where responseData.data is not as expected
+      console.error("Invalid API response format:", responseData);
+    }
   } finally {
     setIsLoading(false);
   }
 };
 
 
+
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page,fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({

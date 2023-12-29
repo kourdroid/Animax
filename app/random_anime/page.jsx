@@ -2,6 +2,7 @@
 import { FaArrowUp } from "react-icons/fa";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const [animeData, setAnimeData] = useState([]);
@@ -77,7 +78,7 @@ const fetchData = async () => {
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -113,10 +114,12 @@ const fetchData = async () => {
                   {item.content}
                 </p>
               </div>
-              <img
+              <Image
                 src={item.entry[0].images.jpg.large_image_url}
                 className="absolute inset-0 opacity-100 hover:opacity-20 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
-                alt={item.entry[0].title}
+                alt={item.title}
+                layout="fill"
+                objectFit="cover"
               />
             </Link>
 
