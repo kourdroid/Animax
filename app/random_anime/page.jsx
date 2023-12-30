@@ -104,7 +104,7 @@ const fetchData = async () => {
           >
             <Link
               className="relative overflow-hidden w-full rounded-lg aspect-portrait"
-              href={item.mal_id.toString()}
+              href={item.entry[0].mal_id.toString()}
             >
               <div className="absolute inset-0  transition-all duration-300 ease-out hover:block z-0 bg-black flex flex-col justify-start items-center px-5 py-8 gap-5">
                 <h3 className="text-xl font-bold text-center">

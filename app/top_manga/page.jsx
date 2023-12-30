@@ -52,13 +52,11 @@ const fetchData = async () => {
       (item) => !fetchedAnimeIds.has(item.mal_id)
     );
 
-    // Update the set of fetched anime IDs
     setFetchedAnimeIds(
       (prevIds) =>
         new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
     );
 
-    // Remove duplicates from the animeData state
     setMangaData((prevData) => {
       const newData = [...prevData, ...uniqueAnimeData];
       const uniqueData = Array.from(
