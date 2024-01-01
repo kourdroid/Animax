@@ -1,31 +1,118 @@
+"use client";
 import Image from "next/image";
 import { FaSadTear } from "react-icons/fa";
+import { useState, useEffect, useCallback } from "react";
 
-export default async function page() {
+export default function page() {
+
+  const [animeData, setAnimeData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
+
   const getRatingContent = (rating) => {
     return rating == null ? "Not yet Rated" : rating;
   };
 
-  const res = await fetch("https://api.jikan.moe/v4/seasons/upcoming");
-  const updata = await res.json();
+
+  const lastAnimeElementRef = useCallback(
+    (node) => {
+      if (isLoading || !node) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const targetEntry = entries.find(
+            (entry) => entry.isIntersecting && entry.target === node
+          );
+
+          if (targetEntry) {
+            setIsLoading(true);
+            setPage((prevPage) => prevPage + 1);
+          }
+        },
+        {
+          root: null, // Use the viewport as the root
+          rootMargin: "0px", // No margin
+          threshold: 0.5, // Trigger when 50% of the element is visible
+        }
+      );
+
+      observer.observe(node);
+
+      // Cleanup the observer when the component unmounts
+      return () => {
+        observer.disconnect();
+      };
+    },
+    [isLoading]
+  );
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `https://api.jikan.moe/v4/seasons/upcoming?page=${page}`
+      );
+      const animeData = await response.json();
+
+      // Check if animeData.data exists and is an array
+      if (animeData.data && Array.isArray(animeData.data)) {
+        // Extract unique anime entries based on their IDs
+        const uniqueAnimeData = animeData.data.filter(
+          (item) => !fetchedAnimeIds.has(item.mal_id)
+        );
+
+        // Update the set of fetched anime IDs
+        setFetchedAnimeIds(
+          (prevIds) =>
+            new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
+        );
+
+        // Remove duplicates from the animeData state
+        setAnimeData((prevData) => {
+          const newData = [...prevData, ...uniqueAnimeData];
+          const uniqueData = Array.from(
+            new Set(newData.map((item) => item.mal_id))
+          ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+          return uniqueData;
+        });
+      } else {
+        // Handle the case where animeData.data is not as expected
+        console.error("Invalid API response format:", animeData);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+    useEffect(() => {
+      fetchData();
+    }, [page, fetchData]);
+
+    const handleScrollToTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    };
+
   return (
     <div className="container mx-auto my-10">
       <div className="grid grid-cols-1 ">
-        {updata.data.map((item) => (
+        {animeData.map((item, index) => (
           <div
             key={item.mal_id}
             className="relative flex flex-col md:flex-row items-start justify-between gap-10 py-10"
+            ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
             <div className="absolute inset-0 bg-white h-0.5 opacity-10"></div>
             <div className="w-full md:w-1/2 mx-auto md:max-w-1/3 ">
-            <Image
-              className="object-cover w-full aspect-square md:aspect-portrait rounded-lg"
-              src={item.images.webp.large_image_url}
-              alt=""
-              width={300}
-              height={300}
-            />
-
+              <Image
+                className="object-cover w-full aspect-square md:aspect-portrait rounded-lg"
+                src={item.images.webp.large_image_url}
+                alt=""
+                width={300}
+                height={300}
+              />
             </div>
             <div className="w-full flex-col space-y-2">
               <div className="bg-red-600 w-max px-2 py-0.5 rounded">
@@ -33,7 +120,37 @@ export default async function page() {
               </div>
               <h2 className=" font-bold text-2xl">{item.title}</h2>
               <p className="text-sm opacity-70">{item.synopsis}</p>
+
               <div className="flex flex-wrap gap-2">
+                {/* release date */}
+                <div>
+                  {item.aired.from == null ? (
+                    <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
+                      Release Date:{" "}
+                      <span className="font-semibold text-red-600">
+                        There is no Release Date Yet
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
+                      Release Date:{" "}
+                      <span className="font-semibold text-red-600">
+                        {item.aired.prop.from.day} /{" "}
+                        {item.aired.prop.from.month} /{" "}
+                        {item.aired.prop.from.year}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {/* end of release date */}
+                {/* genres */}
+                  <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
+                    Genres:{" "}
+                    <span className="font-semibold text-red-600">
+                      {item.genres.map(item => item.name).join(', ')}
+                    </span>
+                  </div>
+                {/* end of genres */}
                 <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
                   Source:{" "}
                   <span className="font-semibold text-red-600">
@@ -46,6 +163,19 @@ export default async function page() {
                     {item.status}
                   </span>
                 </div>
+                <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
+                  Studio:{" "}
+                  {item.studios.length == 0 ? (
+                    <span className="font-semibold text-red-600">
+                      not avaiable
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-red-600">
+                      {item.studios.map((item) => item.name)}
+                    </span>
+                  )}
+                </div>
+
                 <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
                   Rating:{" "}
                   <span className="font-semibold text-red-600">
@@ -74,9 +204,7 @@ export default async function page() {
                     className="rounded-lg w-full md:max-w-1/2 aspect-video"
                     src={`${item.trailer.embed_url}?rel=0`}
                     title="YouTube video player"
-                    frameborder="0"
                     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
                   ></iframe>
                 )}
               </div>
@@ -84,7 +212,6 @@ export default async function page() {
           </div>
         ))}
       </div>
-      
     </div>
   );
 }

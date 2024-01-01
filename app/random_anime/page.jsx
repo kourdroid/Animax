@@ -91,11 +91,11 @@ const fetchData = async () => {
     <main className="container mx-auto">
       <div className="relative w-max mx-auto">
         <h2 className="text-center text-2xl text-white w-max px-5 py-2 mx-auto font-bold my-10">
-          Popular Anime
+          Random Anime
         </h2>
-        <div className="absolute bottom-0 left-0 right-0 w-32 mx-auto h-1 bg-red-600"></div>
+        <div className="absolute bottom-0 left-0 right-0 w-1/2 mx-auto h-1 bg-red-600"></div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 px-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {animeData.map((item, index) => (
           <div
             key={item.mal_id}

@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{js,jsx}',
-    './components/**/*.{js,jsx}',
-    './app/**/*.{js,jsx}',
-    './src/**/*.{js,jsx}',
+    "./pages/**/*.{js,jsx}",
+    "./components/**/*.{js,jsx}",
+    "./app/**/*.{js,jsx}",
+    "./src/**/*.{js,jsx}",
   ],
   prefix: "",
   theme: {
@@ -17,8 +17,9 @@ module.exports = {
       },
     },
     extend: {
-      aspectRatio:{
-        portrait: '11 / 16'
+
+      aspectRatio: {
+        portrait: "11 / 16",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -76,5 +77,7 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [
+    require("tailwindcss-animate"),
+  ],
+};

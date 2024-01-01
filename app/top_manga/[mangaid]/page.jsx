@@ -76,22 +76,34 @@ async function page({ params }) {
         <div className="absolute bottom-0 left-0 right-0 w-10 mx-auto h-1 bg-red-600"></div>
       </div>
       {/* News section */}
-      <div className="w-full flex justify-center items-center mx-auto rounded-lg ">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 px-10">
-          {mangaNewsData.data.map((newsItem) => (
-            <div className="flex flex-col gap-5">
-              {newsItem.images.jpg.image_url && <Image
-                width={300}
-                height={300}
-                src={newsItem.images.jpg.image_url}
-                className="rounded-lg"
-              />}
-              
-              <h2>{newsItem.title}</h2>
-            </div>
-          ))}
+      {mangaNewsData.data.length == 0 ? (
+        <p className="text-center opacity-40">There is no News</p>
+      ) : (
+        <div className="w-full flex justify-center items-center mx-auto rounded-lg ">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 px-10">
+            {mangaNewsData.data.map((newsItem) => (
+              <Link href={newsItem.url}>
+                <div className="flex flex-col gap-5">
+                  {newsItem.images.jpg.image_url == null ? (
+                    <div className="w-full aspect-portrait bg-white ">
+                      there is no image
+                    </div>
+                  ) : (
+                    <Image
+                      width={300}
+                      height={300}
+                      src={newsItem.images.jpg.image_url}
+                      className="rounded-lg aspect-portrait w-full"
+                    />
+                  )}
+
+                  <h2>{newsItem.title}</h2>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
