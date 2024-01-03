@@ -6,7 +6,7 @@ import { FaStar, FaHeart, FaSadTear } from "react-icons/fa";
 
 
 async function page({ params }) {
-
+ try {
   // fetching data of anime Info
     const response = await fetch(
       `https://api.jikan.moe/v4/anime/${params.id}/full`
@@ -19,12 +19,8 @@ async function page({ params }) {
     );
     const charData = await charRes.json();
 
-    // Fetching Anime News
-    const newRes = await fetch(`https://api.jikan.moe/v4/anime/${params.id}/news`);
-    const newsData = await newRes.json();
-
   return (
-    <div className="container mx-auto my-10">
+    <div className="container relative z-10 mx-auto my-10">
       <div className="flex  rounded-lg flex-col md:flex-row justify-between items-center  my-14 gap-8">
         <Link
           href={animeData.data.url}
@@ -150,7 +146,11 @@ async function page({ params }) {
         ))}
       </div>
     </div>
-  );
+  );}
+  catch(e){
+    console.error("Error fetching data:", e);
+    return <div>Error fetching data</div>;
+  }
 }
 
 export default page;

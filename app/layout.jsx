@@ -1,7 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import Search from "@/components/ui/Search";
+import { IoIosArrowDown } from "react-icons/io";
+
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -15,41 +16,92 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} bg-black overflow-x-hidden`}>
-        <div className="w-full h-80 flex flex-col items-center justify-center gap-10 border border-white border-opacity-10 bg-anime">
-          <div className="absolute h-80 opacity-20 z-0 inset-0">
+        <nav className="container mx-auto w-full h-32 flex items-center justify-between gap-10 border-b border-white border-opacity-10">
+          <div className="absolute h-96 opacity-30 z-0 inset-0">
+            <div className="bg-gradient-to-t from-black absolute z-10 inset-0"></div>
             <video
               src="/background.mp4"
               className="w-full h-full object-cover"
               playsInline
               loop
-              autoPlay="autoplay"
+              autoPlay
               muted
             ></video>
           </div>
+
           <Link href="/" className="z-10 text-3xl font-black text-red-600">
             Animax
           </Link>
-          <Search />
-          <nav className="z-10 flex w-full mx-auto ">
-            <ul className="text-sm mx-auto w-4/5 md:text-base text-white px-5 flex flex-wrap justify-center gap-3 md:w-2/3 ">
-              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
-                <Link href="/">Top Anime</Link>
-              </li>
-              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
-                <Link href="/upcoming">Upcoming Anime</Link>
-              </li>
-              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-15 flex justify-center items-center text-center py-3 rounded-full">
-                <Link href="/random_anime">Random Anime</Link>
-              </li>
-              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-40 flex justify-center items-center text-center py-3 rounded-full">
-                <Link href="/top_characters">Top Characters</Link>
-              </li>
-              <li className="bg-black bg-opacity-50 px-5 hover:bg-opacity-40 flex justify-center items-center text-center py-3 rounded-full">
-                <Link href="/top_manga">Top Manga</Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
+
+          <ul className="flex space-x-5 md:space-x-8">
+            {/* Top Anime */}
+            <li className="relative group flex justify-center">
+              <Link href="/" className="nav-link flex items-center gap-1 py-5">
+                Anime <IoIosArrowDown />
+              </Link>
+              <ul className="absolute top-full left-1/2 transform -translate-x-1/2 w-max mx-auto z-50 hidden rounded-xl bg-gradient-to-tr from-[#00000010] to-[#ffffff07] bg-opacity-5 backdrop-blur-md border border-white border-opacity-10 bg-black text-white py-5  px-5 space-y-5 group-hover:flex flex-col justify-center items-center">
+                <li>
+                  <Link className="hover:text-red-600" href="/">
+                    Top Anime
+                  </Link>
+                </li>
+                <li>
+                  <Link className="hover:text-red-600" href="/upcoming">
+                    Upcoming Anime
+                  </Link>
+                </li>
+                <li>
+                  <Link className="hover:text-red-600" href="/recommended_anime">
+                    Recommended Anime
+                  </Link>
+                </li>
+                <li>
+                  <Link className="hover:text-red-600" href="/random_anime">
+                    Random Anime
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
+            {/* Manga */}
+            <li className="relative group flex justify-center">
+              <Link href="/" className="nav-link flex items-center gap-1 py-5">
+                Manga <IoIosArrowDown />
+              </Link>
+              <ul className="absolute top-full left-1/2 transform -translate-x-1/2 w-max mx-auto z-50 hidden rounded-xl bg-gradient-to-tr from-[#00000010] to-[#ffffff07] bg-opacity-5 backdrop-blur-md border border-white border-opacity-10 bg-black text-white py-5  px-5 space-y-5 group-hover:flex flex-col justify-center items-center">
+                <li>
+                  <Link className="hover:text-red-600" href="/top_manga">
+                    Top Manga
+                  </Link>
+                </li>
+                <li>
+                  <Link className="hover:text-red-600" href="/random_manga">
+                    Random Manga
+                  </Link>
+                </li>
+                <li>
+                  <Link className="hover:text-red-600" href="/recommended_manga">
+                    Recommended Manga
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
+            {/* Characters */}
+            <li className="relative group flex justify-center">
+              <Link href="/" className="nav-link flex items-center gap-1 py-5">
+                Characters <IoIosArrowDown />
+              </Link>
+              <ul className="absolute top-full left-1/2 transform -translate-x-1/2 w-max mx-auto z-50 hidden rounded-xl bg-gradient-to-tr from-[#00000010] to-[#ffffff07] bg-opacity-5 backdrop-blur-md border border-white border-opacity-10 bg-black text-white py-5  px-5 space-y-5 group-hover:flex flex-col justify-center items-center">
+                <li>
+                  <Link className="hover:text-red-600" href="/top_characters">
+                    Top Characters
+                  </Link>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
         {children}
       </body>
     </html>

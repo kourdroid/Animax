@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { FaSadTear } from "react-icons/fa";
+import { FaSadTear, FaArrowUp } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
 
 export default function page() {
@@ -97,14 +97,19 @@ export default function page() {
 
   return (
     <div className="container mx-auto my-10">
+      <div className="relative w-max mx-auto">
+        <h2 className="text-center text-2xl text-white w-max px-5 py-2 mx-auto font-bold my-10">
+          Upcoming Anime
+        </h2>
+        <div className="absolute bottom-0 left-0 right-0 w-1/2 mx-auto h-1 bg-red-600"></div>
+      </div>
       <div className="grid grid-cols-1 ">
         {animeData.map((item, index) => (
           <div
             key={item.mal_id}
-            className="relative flex flex-col md:flex-row items-start justify-between gap-10 py-10"
+            className="relative flex flex-col md:flex-row items-start justify-between gap-10 py-10 border-b border-white border-opacity-10"
             ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
-            <div className="absolute inset-0 bg-white h-0.5 opacity-10"></div>
             <div className="w-full md:w-1/2 mx-auto md:max-w-1/3 ">
               <Image
                 className="object-cover w-full aspect-square md:aspect-portrait rounded-lg"
@@ -114,6 +119,8 @@ export default function page() {
                 height={300}
               />
             </div>
+
+            <div></div>
             <div className="w-full flex-col space-y-2">
               <div className="bg-red-600 w-max px-2 py-0.5 rounded">
                 {item.type}
@@ -144,12 +151,12 @@ export default function page() {
                 </div>
                 {/* end of release date */}
                 {/* genres */}
-                  <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
-                    Genres:{" "}
-                    <span className="font-semibold text-red-600">
-                      {item.genres.map(item => item.name).join(', ')}
-                    </span>
-                  </div>
+                <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
+                  Genres:{" "}
+                  <span className="font-semibold text-red-600">
+                    {item.genres.map((item) => item.name).join(", ")}
+                  </span>
+                </div>
                 {/* end of genres */}
                 <div className="bg-white bg-opacity-10 rounded w-max px-2 py-0.5">
                   Source:{" "}
@@ -212,6 +219,12 @@ export default function page() {
           </div>
         ))}
       </div>
+      <button
+        onClick={handleScrollToTop}
+        className="fixed z-50 bottom-4 shadow-2xl right-4 bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out text-white px-4 py-4 rounded-full"
+      >
+        <FaArrowUp />
+      </button>
     </div>
   );
 }

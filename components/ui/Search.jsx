@@ -1,17 +1,54 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-function search() {
+function Search() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.jikan.moe/v4/anime?q=${query}`
+      );
+      setResults(response.data.data || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (query.trim() !== "") {
+      handleSubmit();
+    }
+  }, [query]);
+
   return (
-    <div className="relative w-2/3 mx-auto flex ">
-        <button className="absolute z-10 right-0 top-0 bottom-0 px-4 cursor-pointer bg-gradient-to-tr from-red-600 to-red-800 rounded-full m-1.5 w-max">
-            Submit
-        </button>
-      <input
-        type="text"
-        placeholder="Naruto Shippudden"
-        className="h-12 w-full text-sm md:text-lg text-center text-white  bg-black bg-opacity-50 rounded-full outline-none border border-white border-opacity-10"
-      />
+    <div>
+      <div>
+        {results.length > 0 && (
+          <div className="mt-4">
+            <h2 className="text-white text-lg font-semibold">
+              Search Results:
+            </h2>
+            <ul className="text-white">
+              {results.map((result) => (
+                <li key={result.id}>
+                  <p className="text-white">{result.title}</p>
+                  <img
+                    src={result.image_url}
+                    alt={result.title}
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  {/* Add more details if needed */}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-export default search;
+export default Search;

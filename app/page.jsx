@@ -148,7 +148,7 @@ const fetchData = async () => {
       {isLoading && <p>Loading...</p>}
       <button
         onClick={handleScrollToTop}
-        className="fixed bottom-4 right-4 bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out text-white px-4 py-4 rounded-full"
+        className="fixed z-50 bottom-4 shadow-2xl right-4 bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out text-white px-4 py-4 rounded-full"
       >
         <FaArrowUp />
       </button>
