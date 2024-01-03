@@ -61,6 +61,7 @@ async function page({ params }) {
       <div className="grid grid-cols-2 md:grid-cols-4 content-center lg:grid-cols-5 xl:grid-cols-6 gap-8">
         {charData.data.anime.map((item) => (
           <Link
+          key={item.anime.mal_id}
             className="relative overflow-hidden w-full rounded-lg aspect-portrait"
             href={`/${item.anime.mal_id}`}
           >
@@ -96,6 +97,7 @@ async function page({ params }) {
       <div className="grid grid-cols-2 md:grid-cols-4 content-center lg:grid-cols-5 xl:grid-cols-6 gap-8">
         {charData.data.manga.map((item) => (
           <Link
+          key={item.manga.mal_id}
             className="relative overflow-hidden w-full rounded-lg aspect-portrait"
             href={`/top_manga/${item.manga.mal_id}`}
           >

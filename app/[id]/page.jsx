@@ -120,6 +120,7 @@ async function page({ params }) {
       <div className="grid grid-cols-2 md:grid-cols-4 content-center lg:grid-cols-5 xl:grid-cols-6 gap-8">
         {charData.data.map((item) => (
           <Link
+          key={item.mal_id}
             className="relative overflow-hidden w-full rounded-lg aspect-portrait"
             href={`${params.id}/${item.character.mal_id.toString()}`}
           >

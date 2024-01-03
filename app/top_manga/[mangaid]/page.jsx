@@ -82,7 +82,9 @@ async function page({ params }) {
         <div className="w-full flex justify-center items-center mx-auto rounded-lg ">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 px-10">
             {mangaNewsData.data.map((newsItem) => (
-              <Link href={newsItem.url}>
+              <Link
+              key={newsItem.mal_id}
+              href={newsItem.url}>
                 <div className="flex flex-col gap-5">
                   {newsItem.images.jpg.image_url == null ? (
                     <div className="w-full aspect-portrait bg-white ">
