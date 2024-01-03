@@ -1,6 +1,6 @@
 'use client'
 import { FaArrowUp, FaStar } from "react-icons/fa";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -45,7 +45,7 @@ const lastAnimeElementRef = useCallback(
 );
 
 
-const fetchData = async () => {
+const fetchData = async (page) => {
   try {
     const response = await fetch(
       `https://api.jikan.moe/v4/top/anime?page=${page}`
@@ -82,11 +82,12 @@ const fetchData = async () => {
   }
 };
 
+const memoizedFetchAnimeData = useMemo(() => fetchData, []);
 
 
   useEffect(() => {
-    fetchData();
-  }, [page,fetchData]);
+    memoizedFetchAnimeData(page);
+  }, [page, memoizedFetchAnimeData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({

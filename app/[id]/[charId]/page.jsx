@@ -97,7 +97,7 @@ async function page({ params }) {
       <div className="grid grid-cols-2 md:grid-cols-4 content-center lg:grid-cols-5 xl:grid-cols-6 gap-8">
         {charData.data.manga.map((item) => (
           <Link
-          key={item.manga.mal_id}
+            key={item.manga.mal_id}
             className="relative overflow-hidden w-full rounded-lg aspect-portrait"
             href={`/top_manga/${item.manga.mal_id}`}
           >
@@ -110,7 +110,6 @@ async function page({ params }) {
               </p>
             </div>
             <Image
-              key={item.manga.mal_id}
               src={item.manga.images.webp.large_image_url}
               className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
               alt={item.title}
