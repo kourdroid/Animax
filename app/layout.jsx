@@ -1,7 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoSearch } from "react-icons/io";
+import { FaSearch } from "react-icons/fa";
 
 
 
@@ -29,14 +30,20 @@ export default function RootLayout({ children }) {
             ></video>
           </div>
 
-          <Link href="/" className="z-10 text-3xl font-black text-red-600">
+          <Link
+            href="/"
+            className="z-10 text-3xl font-black bg-gradient-to-tr from-red-600 to-red-800 bg-clip-text text-transparent"
+          >
             Animax
           </Link>
 
-          <ul className="flex space-x-5 md:space-x-8">
+          <ul className="flex items-center space-x-5 md:space-x-8">
             {/* Top Anime */}
-            <li className="relative group flex justify-center">
-              <Link href="/" className="nav-link flex items-center gap-1 py-5">
+            <li className="relative group flex justify-center items-center">
+              <Link
+                href="/"
+                className="nav-link flex items-center gap-1 py-5 hover:text-red-600 font-bold"
+              >
                 Anime <IoIosArrowDown />
               </Link>
               <ul className="absolute top-full left-1/2 transform -translate-x-1/2 w-max mx-auto z-50 hidden rounded-xl bg-gradient-to-tr from-[#00000010] to-[#ffffff07] bg-opacity-5 backdrop-blur-md border border-white border-opacity-10 bg-black text-white py-5  px-5 space-y-5 group-hover:flex flex-col justify-center items-center">
@@ -51,7 +58,10 @@ export default function RootLayout({ children }) {
                   </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-red-600" href="/recommended_anime">
+                  <Link
+                    className="hover:text-red-600"
+                    href="/recommended_anime"
+                  >
                     Recommended Anime
                   </Link>
                 </li>
@@ -65,7 +75,10 @@ export default function RootLayout({ children }) {
 
             {/* Manga */}
             <li className="relative group flex justify-center">
-              <Link href="/" className="nav-link flex items-center gap-1 py-5">
+              <Link
+                href="/top_manga"
+                className="nav-link flex items-center gap-1 py-5 hover:text-red-600 font-bold"
+              >
                 Manga <IoIosArrowDown />
               </Link>
               <ul className="absolute top-full left-1/2 transform -translate-x-1/2 w-max mx-auto z-50 hidden rounded-xl bg-gradient-to-tr from-[#00000010] to-[#ffffff07] bg-opacity-5 backdrop-blur-md border border-white border-opacity-10 bg-black text-white py-5  px-5 space-y-5 group-hover:flex flex-col justify-center items-center">
@@ -80,7 +93,10 @@ export default function RootLayout({ children }) {
                   </Link>
                 </li>
                 <li>
-                  <Link className="hover:text-red-600" href="/recommended_manga">
+                  <Link
+                    className="hover:text-red-600"
+                    href="/recommended_manga"
+                  >
                     Recommended Manga
                   </Link>
                 </li>
@@ -89,7 +105,10 @@ export default function RootLayout({ children }) {
 
             {/* Characters */}
             <li className="relative group flex justify-center">
-              <Link href="/" className="nav-link flex items-center gap-1 py-5">
+              <Link
+                href="/top_characters"
+                className="nav-link flex items-center gap-1 py-5 hover:text-red-600 font-bold"
+              >
                 Characters <IoIosArrowDown />
               </Link>
               <ul className="absolute top-full left-1/2 transform -translate-x-1/2 w-max mx-auto z-50 hidden rounded-xl bg-gradient-to-tr from-[#00000010] to-[#ffffff07] bg-opacity-5 backdrop-blur-md border border-white border-opacity-10 bg-black text-white py-5  px-5 space-y-5 group-hover:flex flex-col justify-center items-center">
@@ -100,6 +119,12 @@ export default function RootLayout({ children }) {
                 </li>
               </ul>
             </li>
+            <Link
+              href="search_anime"
+              className="relative group flex p-3 rounded-full cursor-pointer justify-center items-center bg-white hover:bg-gradient-to-tr from-red-600 to-red-800  bg-opacity-10 h-max"
+            >
+              <FaSearch className="text-xl " />
+            </Link>
           </ul>
         </nav>
         {children}

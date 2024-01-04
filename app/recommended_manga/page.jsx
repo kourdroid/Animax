@@ -89,7 +89,7 @@ export default function Home() {
     <main className="container mx-auto">
       <div className="relative w-max mx-auto">
         <h2 className="text-center text-2xl text-white w-max px-5 py-2 mx-auto font-bold my-10">
-          Random Anime
+          Recommended Manga
         </h2>
         <div className="absolute bottom-0 left-0 right-0 w-1/2 mx-auto h-1 bg-red-600"></div>
       </div>

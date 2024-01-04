@@ -7,6 +7,12 @@ async function page({ params }) {
     `https://api.jikan.moe/v4/characters/${params.charId}/full`
   );
   const charData = await response.json();
+
+
+  const imgResponse = await fetch(
+    `https://api.jikan.moe/v4/characters/${params.charId}/pictures`
+  );
+  const imgCharData = await imgResponse.json();
   return (
     <div className="container mx-auto my-10">
       <div className="flex  rounded-lg flex-col md:flex-row justify-between items-center  my-14 gap-8">
@@ -61,7 +67,7 @@ async function page({ params }) {
       <div className="grid grid-cols-2 md:grid-cols-4 content-center lg:grid-cols-5 xl:grid-cols-6 gap-8">
         {charData.data.anime.map((item) => (
           <Link
-          key={item.anime.mal_id}
+            key={item.anime.mal_id}
             className="relative overflow-hidden w-full rounded-lg aspect-portrait"
             href={`/${item.anime.mal_id}`}
           >
@@ -117,6 +123,37 @@ async function page({ params }) {
               objectFit="cover"
             />
           </Link>
+        ))}
+      </div>
+      {/* character Pictures */}
+      <div className="relative w-max mx-auto">
+        <h2 className="text-center text-2xl  text-white w-max px-5 py-2 mx-auto font-bold  my-10">
+          {charData.data.name} Pictures
+        </h2>
+        <div className="absolute bottom-0 left-0 right-0 w-1/2 mx-auto h-1 bg-red-600"></div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 content-center lg:grid-cols-5 xl:grid-cols-6 gap-8">
+        {imgCharData.data.map((item) => (
+          <div
+            key={item.jpg.image_url}
+            className="relative overflow-hidden w-full rounded-lg aspect-portrait"
+          >
+            <div className="absolute inset-0  transition-all duration-300 ease-out hover:block z-0 bg-black flex flex-col justify-start items-center px-5 py-8 gap-5">
+              <h3 className="text-xl font-bold text-center">
+                {charData.data.name}
+              </h3>
+              <p className="text-lg font-bold text-red-600 overflow-hidden max-h-60 line-clamp-3 md:line-clamp-6">
+                {charData.data.anime[0].role}
+              </p>
+            </div>
+            <Image
+              src={item.jpg.image_url}
+              className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+              alt={charData.data.name}
+              layout="fill"
+              objectFit="cover"
+            />
+          </div>
         ))}
       </div>
     </div>
