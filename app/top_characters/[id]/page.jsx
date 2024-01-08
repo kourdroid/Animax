@@ -76,11 +76,15 @@ async function page({ params }) {
         </div>
         <div className="grid grid-cols-5 gap-8">
           {charData.data.voices.map((item) => (
-            <div className="flex flex-col justify-between items-center gap-2 ">
+            <div
+              key={item.mal_id}
+              className="flex flex-col justify-between items-center gap-2 "
+            >
               <Image
                 className="aspect-portrait rounded-lg"
                 width={300}
                 height={300}
+                alt={item.person.name}
                 src={item.person.images.jpg.image_url}
               />
               <h2 className="text-center font-bold">{item.person.name}</h2>

@@ -16,7 +16,7 @@ async function refreshAnime() {
   setRanAnimeData(ranAnimeData);
 }
 
-function page() {
+function Page() {
     const [ranAnimeData, setRanAnimeData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -137,4 +137,4 @@ function page() {
     );
 }
 
-export default page;
+export default Page;

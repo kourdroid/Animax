@@ -42,7 +42,7 @@ async function page({ params }) {
           )}
           <div className="flex gap-2 opacity-70">
             {charData.data.nicknames.map((item) => (
-              <h3 className="">{item + ","}</h3>
+              <h3 className="" key={item}>{item + ","}</h3>
             ))}
           </div>
           <div className="opacity-70 text-sm font-light">
