@@ -43,9 +43,6 @@ export default function Home() {
     [isLoading]
   );
 
-
-
-  useEffect(() => {
       const fetchData = async () => {
         try {
           const response = await fetch(
@@ -79,6 +76,9 @@ export default function Home() {
           setIsLoading(false);
         }
       };
+
+  useEffect(() => {
+    fetchData()
   }, [page, fetchData]);
 
   const handleScrollToTop = () => {
