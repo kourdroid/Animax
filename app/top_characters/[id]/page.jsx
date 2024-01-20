@@ -121,7 +121,7 @@ async function page({ params }) {
       {/* trailer */}
       <div className="grid grid-cols-3 gap-10 rounded-lg">
         {charData.data.anime.map((item, index) => (
-          <div className="space-y-5">
+          <div key={item.anime.mal_id} className="space-y-5">
             <Link href={`/${item.anime.mal_id.toString()}`}>
               <img
                 src={item.anime.images.jpg.large_image_url}

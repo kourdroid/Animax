@@ -1,6 +1,7 @@
 "use client";
 import { FaArrowUp } from "react-icons/fa";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { debounce } from 'lodash'
 import Link from "next/link";
 import Image from "next/image";
 
@@ -41,6 +42,11 @@ const animeArray = Array.isArray(responseData.data) ? responseData.data : [];
   }
 }, [page, fetchedAnimeIds]);
 
+
+const debouncedFetchData = useMemo(
+  () => debounce(fetchData, 1000),
+  [fetchData]
+);
 const lastAnimeElementRef = useCallback(
   (node) => {
     if (isLoading || !node) return;
@@ -73,8 +79,8 @@ const lastAnimeElementRef = useCallback(
 );
 
 useEffect(() => {
-  fetchData();
-}, [page, fetchData]);
+  debouncedFetchData();
+}, [page, debouncedFetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -112,6 +118,7 @@ useEffect(() => {
                 </p>
               </div>
               <Image
+              
               width={300}
               height={300}
                 src={item.images.jpg.image_url}

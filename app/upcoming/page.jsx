@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FaSadTear, FaArrowUp } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
 
-export default function page() {
+export default function Upcoming() {
 
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

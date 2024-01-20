@@ -43,39 +43,42 @@ export default function Home() {
     [isLoading]
   );
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `https://api.jikan.moe/v4/random/manga?page=${page}`
-      );
-      const responseData = await response.json();
 
-      // Extract unique anime entries based on their IDs
-      const uniquemangaData = responseData.data.filter(
-        (item) => !fetchedAnimeIds.has(item.mal_id)
-      );
-
-      // Update the set of fetched anime IDs
-      setFetchedAnimeIds(
-        (prevIds) =>
-          new Set([...prevIds, ...uniquemangaData.map((item) => item.mal_id)])
-      );
-
-      // Remove duplicates from the mangaData state
-      setMangaData((prevData) => {
-        const newData = [...prevData, ...uniquemangaData];
-        const uniqueData = Array.from(
-          new Set(newData.map((item) => item.mal_id))
-        ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
-        return uniqueData;
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchData();
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `https://api.jikan.moe/v4/random/manga?page=${page}`
+          );
+          const responseData = await response.json();
+
+          // Extract unique anime entries based on their IDs
+          const uniquemangaData = responseData.data.filter(
+            (item) => !fetchedAnimeIds.has(item.mal_id)
+          );
+
+          // Update the set of fetched anime IDs
+          setFetchedAnimeIds(
+            (prevIds) =>
+              new Set([
+                ...prevIds,
+                ...uniquemangaData.map((item) => item.mal_id),
+              ])
+          );
+
+          // Remove duplicates from the mangaData state
+          setMangaData((prevData) => {
+            const newData = [...prevData, ...uniquemangaData];
+            const uniqueData = Array.from(
+              new Set(newData.map((item) => item.mal_id))
+            ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+            return uniqueData;
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
   }, [page, fetchData]);
 
   const handleScrollToTop = () => {
