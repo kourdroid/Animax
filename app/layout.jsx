@@ -3,6 +3,7 @@ import "./globals.css";
 import Link from "next/link";
 import { IoIosArrowDown, IoSearch } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
+import Image from "next/image";
 
 
 
@@ -18,7 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} bg-black overflow-x-hidden`}>
-        <nav className="container mx-auto w-full h-32 flex items-center justify-between gap-10 border-b border-white border-opacity-10">
+        <nav className="container mx-auto w-full h-32 flex items-center justify-between gap-10 border-b border-white border-opacity-10 px-10">
           <div className="absolute h-96 opacity-30 z-0 inset-0">
             <div className="bg-gradient-to-t from-black absolute z-10 inset-0"></div>
             <video
@@ -35,10 +36,25 @@ export default function RootLayout({ children }) {
             href="/"
             className="z-10 text-3xl font-black bg-gradient-to-tr from-red-600 to-red-800 bg-clip-text text-transparent"
           >
-            Animax
+            <Image 
+            className="w-32 hidden md:flex"
+            src='/logo.svg'
+            alt="Animax Logo"
+            width={80}
+            height={20}
+            />
+            <Image 
+            className="w-50 block md:hidden"
+            src='/logo_sm.svg'
+            alt="Animax Logo"
+            width={100}
+            height={50}
+            />
+
+            
           </Link>
 
-          <ul className="flex items-center space-x-5 md:space-x-8">
+          <ul className="flex text-xs md:text-base items-center space-x-5 md:space-x-8">
             {/* Top Anime */}
             <li className="relative group flex justify-center items-center">
               <Link
@@ -122,9 +138,9 @@ export default function RootLayout({ children }) {
             </li>
             <Link
               href="search_anime"
-              className="relative group flex p-3 rounded-full cursor-pointer justify-center items-center bg-white hover:bg-gradient-to-tr from-red-600 to-red-800  bg-opacity-10 h-max"
+              className="relative group flex p-2 md:p-3 rounded-full cursor-pointer justify-center items-center bg-white hover:bg-gradient-to-tr from-red-600 to-red-800  bg-opacity-10 h-max"
             >
-              <FaSearch className="text-xl " />
+              <FaSearch className="text-xs md:text-xl " />
             </Link>
           </ul>
         </nav>
