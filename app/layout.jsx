@@ -4,6 +4,7 @@ import Link from "next/link";
 import { IoIosArrowDown, IoSearch } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import Image from "next/image";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 
