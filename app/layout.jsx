@@ -83,11 +83,6 @@ export default function RootLayout({ children }) {
                     Recommended Anime
                   </Link>
                 </li>
-                <li>
-                  <Link className="hover:text-red-600" href="/random_anime">
-                    Random Anime
-                  </Link>
-                </li>
               </ul>
             </li>
 
@@ -103,11 +98,6 @@ export default function RootLayout({ children }) {
                 <li>
                   <Link className="hover:text-red-600" href="/top_manga">
                     Top Manga
-                  </Link>
-                </li>
-                <li>
-                  <Link className="hover:text-red-600" href="/random_manga">
-                    Random Manga
                   </Link>
                 </li>
                 <li>
