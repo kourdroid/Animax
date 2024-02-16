@@ -1,5 +1,4 @@
 import News from '@/components/pages/News'
-import Image from "next/image";
 import Link from "next/link";
 import { FaStar, FaHeart, FaSadTear } from "react-icons/fa";
 
@@ -24,7 +23,7 @@ async function page({ params }) {
           href={animeData.data.url}
           className="relative w-1/2 max-w-96 rounded-lg"
         >
-          <Image
+          <img
             alt={animeData.data.title}
             width={150}
             height={300}
@@ -134,11 +133,10 @@ async function page({ params }) {
                 <p>{item.favorites}</p>
               </div>
             </div>
-            <Image
+            <img
               src={item.character.images.jpg.image_url}
-              className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+              className="absolute object-fill inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
               alt={item.title}
-              fill
             />
           </Link>
         ))}

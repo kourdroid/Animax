@@ -3,7 +3,6 @@ import { FaArrowUp } from "react-icons/fa";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { debounce } from 'lodash'
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Home() {
   const [animeData, setAnimeData] = useState([]);
@@ -117,7 +116,7 @@ useEffect(() => {
                   {item.about}
                 </p>
               </div>
-              <Image
+              <img
               
               width={300}
               height={300}

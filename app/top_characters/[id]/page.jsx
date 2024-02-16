@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
 
@@ -20,7 +19,7 @@ async function page({ params }) {
           href={charData.data.url}
           className="relative w-1/2 max-w-96 rounded-lg"
         >
-          <Image
+          <img
             key={charData.data.mal_id}
             alt={charData.data.name}
             width={150}
@@ -80,7 +79,7 @@ async function page({ params }) {
               key={item.mal_id}
               className="flex flex-col justify-between items-center gap-2 "
             >
-              <Image
+              <img
                 className="aspect-portrait rounded-lg"
                 width={300}
                 height={300}
@@ -102,7 +101,7 @@ async function page({ params }) {
       </div>
       <div className="flex justify-between items-center gap-2 flex-wrap">
         {picImages.data.map((item, index) => (
-          <Image
+          <img
             width={300}
             height={300}
             key={index}
@@ -119,7 +118,7 @@ async function page({ params }) {
         <div className="absolute bottom-0 left-0 right-0 w-10 mx-auto h-1 bg-red-600"></div>
       </div>
       {/* trailer */}
-      <div className="grid grid-cols-3 gap-10 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {charData.data.anime.map((item, index) => (
           <div key={item.anime.mal_id} className="space-y-5">
             <Link href={`/${item.anime.mal_id.toString()}`}>

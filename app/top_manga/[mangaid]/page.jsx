@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { FaStar, FaHeart } from "react-icons/fa";
 
@@ -20,7 +19,7 @@ async function page({ params }) {
           href={mangaData.data.url}
           className="relative w-1/2 max-w-96 rounded-lg"
         >
-          <Image
+          <img
             alt={mangaData.data.title}
             width={150}
             height={300}
@@ -91,7 +90,7 @@ async function page({ params }) {
                       there is no image
                     </div>
                   ) : (
-                    <Image
+                    <img
                       width={300}
                       height={300}
                       src={newsItem.images.jpg.image_url}

@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { FaSadTear, FaArrowUp } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
 
@@ -111,7 +110,7 @@ export default function Upcoming() {
             ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
             <div className="w-full md:w-1/2 mx-auto md:max-w-1/3 ">
-              <Image
+              <img
                 className="object-cover w-full aspect-square md:aspect-portrait rounded-lg"
                 src={item.images.webp.large_image_url}
                 alt=""

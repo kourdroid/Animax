@@ -3,7 +3,6 @@
 import { FaArrowUp, FaStar } from "react-icons/fa";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function TopManga() {
   const [mangaData, setMangaData] = useState([]);
@@ -115,7 +114,7 @@ const fetchData = async () => {
                   {item.score}
                 </div>
               </div>
-              <Image
+              <img
                 src={item.images.jpg.large_image_url}
                 className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
                 alt={item.title}

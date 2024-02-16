@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { FaStar, FaHeart } from "react-icons/fa";
 
 async function page({ params }) {
@@ -20,7 +19,7 @@ async function page({ params }) {
           href={charData.data.url}
           className="relative w-1/2 max-w-96 rounded-lg"
         >
-          <Image
+          <img
             alt={charData.data.name}
             width={150}
             height={300}
@@ -79,13 +78,11 @@ async function page({ params }) {
                 {item.role}
               </p>
             </div>
-            <Image
+            <img
               key={item.anime.mal_id}
               src={item.anime.images.webp.large_image_url}
-              className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+              className="absolute object-cover inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
               alt={item.title}
-              layout="fill"
-              objectFit="cover"
             />
           </Link>
         ))}
@@ -115,12 +112,10 @@ async function page({ params }) {
                 {item.role}
               </p>
             </div>
-            <Image
+            <img
               src={item.manga.images.webp.large_image_url}
-              className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+              className="absolute inset-0 object-cover opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
               alt={item.title}
-              layout="fill"
-              objectFit="cover"
             />
           </Link>
         ))}
@@ -146,12 +141,10 @@ async function page({ params }) {
                 {charData.data.anime[0].role}
               </p>
             </div>
-            <Image
+            <img
               src={item.jpg.image_url}
-              className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+              className="absolute inset-0 object-cover opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
               alt={charData.data.name}
-              layout="fill"
-              objectFit="cover"
             />
           </div>
         ))}
