@@ -14,7 +14,7 @@ async function page({ params }) {
   const picImages = await picres.json();
 
   return (
-    <div className="container mx-auto my-10">
+    <div className="container mx-auto my-10 z-50">
       <div className="flex  rounded-lg flex-col md:flex-row justify-between items-center  my-14 gap-8">
         <Link
           href={charData.data.url}
@@ -30,7 +30,7 @@ async function page({ params }) {
           />
         </Link>
 
-        <div className="flex flex-col w-2/3 gap-5">
+        <div className="flex flex-col w-2/3 gap-5 z-50">
           <Link
             className="bg-red-600 px-3 py-0.5 rounded-lg w-max"
             href={"/" + charData.data.anime[0].anime.mal_id.toString()}
@@ -38,7 +38,7 @@ async function page({ params }) {
             {charData.data.anime[0].anime.title}
           </Link>
 
-          <div className="flex flex-col gap-2 justify-start items-start">
+          <div className="flex flex-col gap-2 justify-start items-start z-50">
             <h2 className="text-3xl font-bold">{`${charData.data.name}`}</h2>
             <h2 className="text-3xl font-bold"> {charData.data.name_kanji}</h2>
           </div>
