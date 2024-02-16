@@ -45,7 +45,7 @@ const lastAnimeElementRef = useCallback(
 );
 
 
-const fetchData = async (page) => {
+const fetchData = async (page = 1) => {
   try {
     const response = await fetch(
       `https://api.jikan.moe/v4/top/anime?page=${page}`
@@ -77,6 +77,8 @@ const fetchData = async (page) => {
       // Handle the case where responseData.data is not as expected
       console.error("Invalid API response format:", responseData);
     }
+  } catch (error) {
+    console.error("Error fetching data:", error);
   } finally {
     setIsLoading(false);
   }
@@ -85,9 +87,15 @@ const fetchData = async (page) => {
 const memoizedFetchAnimeData = useMemo(() => fetchData, []);
 
 
-  useEffect(() => {
-    memoizedFetchAnimeData(page);
-  }, [page, memoizedFetchAnimeData]);
+useEffect(() => {
+  fetchData();
+}, [fetchData]);
+
+useEffect(() => {
+  if (page > 1) {
+    fetchData(page);
+  }
+}, [page, memoizedFetchAnimeData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
