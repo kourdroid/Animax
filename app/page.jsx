@@ -136,12 +136,10 @@ useEffect(() => {
                   <p className="text-center font-bold text-red-600 py-5">{item.studios[0].name}</p>
                 </div>
               </div>
-              <Image
+              <img
                 src={item.images.jpg.large_image_url}
-                className="absolute inset-0 opacity-100 hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
+                className="absolute inset-0 opacity-100 object-cover hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
                 alt={item.title}
-                layout="fill"
-                objectFit="cover"
               />
             </Link>
 
