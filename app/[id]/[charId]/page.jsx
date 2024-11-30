@@ -7,7 +7,6 @@ async function page({ params }) {
   );
   const charData = await response.json();
 
-
   const imgResponse = await fetch(
     `https://api.jikan.moe/v4/characters/${params.charId}/pictures`
   );
@@ -29,9 +28,11 @@ async function page({ params }) {
         </Link>
 
         <div className="flex flex-col w-2/3 gap-5">
-          <div className="bg-red-600 px-3 py-0.5 rounded-lg w-max">
-            {charData.data.anime[0].role}
-          </div>
+          {charData.data.anime && charData.data.anime.length > 0 && (
+            <div className="bg-red-600 px-3 py-0.5 rounded-lg w-max">
+              {charData.data.anime[0].role}
+            </div>
+          )}
           <div className="text-4xl font-bold">
             <h2>{charData.data.name}</h2>
             <h2>{charData.data.name_kanji}</h2>
@@ -102,7 +103,7 @@ async function page({ params }) {
           <Link
             key={item.manga.mal_id}
             className="relative overflow-hidden w-full rounded-lg aspect-portrait"
-            href={`/top_manga/${item.manga.mal_id}`}
+            href={`/manga/${item.manga.mal_id}`}
           >
             <div className="absolute inset-0  transition-all duration-300 ease-out hover:block z-0 bg-black flex flex-col justify-start items-center px-5 py-8 gap-5">
               <h3 className="text-xl font-bold text-center">
@@ -138,7 +139,7 @@ async function page({ params }) {
                 {charData.data.name}
               </h3>
               <p className="text-lg font-bold text-red-600 overflow-hidden max-h-60 line-clamp-3 md:line-clamp-6">
-                {charData.data.anime[0].role}
+                {charData.data.anime && charData.data.anime.length > 0 ? charData.data.anime[0].role : ""}
               </p>
             </div>
             <img

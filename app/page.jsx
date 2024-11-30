@@ -1,101 +1,99 @@
-'use client'
-import { FaArrowUp, FaStar } from "react-icons/fa";
-import { useState, useEffect, useCallback, useMemo } from "react";
+"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
+  const [activeTrailer, setActiveTrailer] = useState(null);
 
+  const lastAnimeElementRef = useCallback(
+    (node) => {
+      if (isLoading || !node) return;
 
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const targetEntry = entries.find(
+            (entry) => entry.isIntersecting && entry.target === node
+          );
 
-const lastAnimeElementRef = useCallback(
-  (node) => {
-    if (isLoading || !node) return;
+          if (targetEntry) {
+            setIsLoading(true);
+            setPage((prevPage) => prevPage + 1);
+          }
+        },
+        {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.5,
+        }
+      );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const targetEntry = entries.find(
-          (entry) => entry.isIntersecting && entry.target === node
+      observer.observe(node);
+      return () => observer.disconnect();
+    },
+    [isLoading]
+  );
+
+  const fetchData = async (page = 1) => {
+    try {
+      const response = await fetch(
+        `https://api.jikan.moe/v4/top/anime?page=${page}`
+      );
+      const responseData = await response.json();
+
+      if (responseData?.data) {
+        const uniqueAnimeData = responseData.data.filter(
+          (item) => !fetchedAnimeIds.has(item.mal_id)
         );
 
-        if (targetEntry) {
-          setIsLoading(true);
-          setPage((prevPage) => prevPage + 1);
-        }
-      },
-      {
-        root: null, // Use the viewport as the root
-        rootMargin: "0px", // No margin
-        threshold: 0.5, // Trigger when 50% of the element is visible
+        // Fetch trailer data for each anime
+        const animeWithTrailers = await Promise.all(
+          uniqueAnimeData.map(async (anime) => {
+            try {
+              const trailerResponse = await fetch(
+                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
+              );
+              const trailerData = await trailerResponse.json();
+              return {
+                ...anime,
+                trailer_url: trailerData.data?.trailer?.embed_url || null
+              };
+            } catch (error) {
+              console.error("Error fetching trailer:", error);
+              return {
+                ...anime,
+                trailer_url: null
+              };
+            }
+          })
+        );
+
+        setFetchedAnimeIds(
+          (prevIds) =>
+            new Set([...prevIds, ...animeWithTrailers.map((item) => item.mal_id)])
+        );
+
+        setAnimeData((prevData) => {
+          const newData = [...prevData, ...animeWithTrailers];
+          const uniqueData = Array.from(
+            new Set(newData.map((item) => item.mal_id))
+          ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
+          return uniqueData;
+        });
       }
-    );
-
-    observer.observe(node);
-
-    // Cleanup the observer when the component unmounts
-    return () => {
-      observer.disconnect();
-    };
-  },
-  [isLoading]
-);
-
-
-const fetchData = async (page = 1) => {
-  try {
-    const response = await fetch(
-      `https://api.jikan.moe/v4/top/anime?page=${page}`
-    );
-    const responseData = await response.json();
-
-    // Check if responseData.data exists and is an array
-    if (responseData.data && Array.isArray(responseData.data)) {
-      // Extract unique anime entries based on their IDs
-      const uniqueAnimeData = responseData.data.filter(
-        (item) => !fetchedAnimeIds.has(item.mal_id)
-      );
-
-      // Update the set of fetched anime IDs
-      setFetchedAnimeIds(
-        (prevIds) =>
-          new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
-      );
-
-      // Remove duplicates from the animeData state
-      setAnimeData((prevData) => {
-        const newData = [...prevData, ...uniqueAnimeData];
-        const uniqueData = Array.from(
-          new Set(newData.map((item) => item.mal_id))
-        ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
-        return uniqueData;
-      });
-    } else {
-      // Handle the case where responseData.data is not as expected
-      console.error("Invalid API response format:", responseData);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-const memoizedFetchAnimeData = useMemo(() => fetchData, []);
-
-
-useEffect(() => {
-  fetchData();
-}, [fetchData]);
-
-useEffect(() => {
-  if (page > 1) {
+  useEffect(() => {
     fetchData(page);
-  }
-}, [page, memoizedFetchAnimeData]);
+  }, [page]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -104,61 +102,180 @@ useEffect(() => {
     });
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 }
+  };
+
   return (
-    <main className="container mx-auto">
-      <div className="relative w-max mx-auto">
-        <h2 className="text-center text-2xl text-white w-max px-5 py-2 mx-auto font-bold my-10">
-          Popular Anime
-        </h2>
-        <div className="absolute bottom-0 left-0 right-0 w-32 mx-auto h-1 bg-red-600"></div>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-        {animeData.map((item, index) => (
-          <div
-            key={item.mal_id}
-            className="relative flex flex-col justify-between items-center"
-            ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
+    <>
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden mx-4 my-6">
+        <div className="absolute inset-0 rounded-2xl overflow-hidden">
+          <video
+            src="/background.mp4"
+            className="w-full h-full object-cover scale-105"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/90"></div>
+        </div>
+        
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-6xl md:text-8xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-gray-300 leading-tight"
           >
-            <Link
-              className="relative overflow-hidden w-full rounded-lg aspect-portrait"
-              href={item.mal_id.toString()}
-            >
-              <div className="absolute inset-0  transition-all duration-300 ease-out hover:block z-0 bg-black flex flex-col justify-between text-center  items-center py-10 px-5 md:py-3 gap-5">
-                <h3 className="text-xl font-bold text-center py-5 max-h-12 line-clamp-1">{item.title}</h3>
-                <p className="text-sm overflow-hidden max-h-full line-clamp-3 md:line-clamp-6">
-                  {item.synopsis}
-                </p>
-                <div className="flex items-center gap-2 text-xl font-bold">
-                  <FaStar className="text-amber-500 drop-shadow-[0px_2px_8px_#ffbb00]" />
-                  {item.score}
-                </div>
-                <div>
-                  <p className="text-center font-bold text-red-600 py-5">{item.studios[0].name}</p>
+            Discover Your Next Anime Adventure
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl md:text-3xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+          >
+            Explore top-rated anime series and find your next favorite story
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="relative max-w-xl mx-auto"
+          >
+            <Link href="/search_anime">
+              <div className="group cursor-pointer backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 rounded-full p-5 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
+                <div className="flex items-center justify-center space-x-3">
+                  <span className="text-xl font-medium">Search Anime</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </div>
               </div>
-              <img
-                src={item.images.jpg.large_image_url}
-                className="absolute inset-0 opacity-100 object-cover hover:opacity-5 rounded-lg aspect-portrait h-full w-full hover:scale-125 hover:rotate-6 z-10 transition-all duration-300 ease-in-out "
-                alt={item.title}
-              />
             </Link>
+          </motion.div>
+        </div>
+      </section>
 
-            <Link
-              href={item.mal_id.toString()}
-              className="text-center font-semibold tracking-wide py-2 mx-auto"
-            >
-              {item.title}
-            </Link>
-          </div>
+      <motion.div 
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6"
+      >
+        {animeData.map((anime, index) => (
+          <motion.div
+            key={anime.mal_id}
+            variants={item}
+            ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
+            className="bg-gradient-to-b from-gray-900/50 to-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden group hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
+          >
+            <div className="relative">
+              <div className="relative aspect-video overflow-hidden">
+                {activeTrailer === anime.mal_id && anime.trailer_url ? (
+                  <iframe
+                    src={anime.trailer_url}
+                    className="w-full h-full"
+                    allowFullScreen
+                    title={`${anime.title} Trailer`}
+                  />
+                ) : (
+                  <img
+                    src={anime.images.jpg.large_image_url}
+                    alt={anime.title}
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                
+                {anime.trailer_url && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
+                    }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                      <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
+                    </div>
+                  </button>
+                )}
+              </div>
+
+              <Link href={`/${anime.mal_id}`}>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <FaStar className="text-yellow-400 w-5 h-5" />
+                      <span className="text-lg font-semibold">{anime.score || 'N/A'}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <FaCalendar className="text-gray-400 w-4 h-4" />
+                      <span className="text-sm text-gray-400">{new Date(anime.aired.from).getFullYear()}</span>
+                    </div>
+                  </div>
+
+                  <h3 className="font-bold text-xl mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                    {anime.title}
+                  </h3>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {anime.genres.slice(0, 3).map((genre) => (
+                      <span
+                        key={genre.mal_id}
+                        className="text-xs px-3 py-1 bg-gray-800 text-gray-300 rounded-full"
+                      >
+                        {genre.name}
+                      </span>
+                    ))}
+                  </div>
+
+                  <p className="text-sm text-gray-400 line-clamp-3">
+                    {anime.synopsis}
+                  </p>
+
+                  <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
+                    <span>Episodes: {anime.episodes || 'Ongoing'}</span>
+                    <span className={`px-2 py-1 rounded-full ${
+                      anime.status === "Currently Airing"
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-red-500/20 text-red-400"
+                    }`}>
+                      {anime.status}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </motion.div>
         ))}
-      </div>
-      {isLoading && <p>Loading...</p>}
+      </motion.div>
+      
+      {isLoading && (
+        <div className="flex justify-center mt-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )}
+
       <button
         onClick={handleScrollToTop}
-        className="fixed z-50 bottom-4 shadow-2xl right-4 bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out text-white px-4 py-4 rounded-full"
+        className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
       >
-        <FaArrowUp />
+        <FaArrowUp className="w-6 h-6" />
       </button>
-    </main>
+    </>
   );
 }

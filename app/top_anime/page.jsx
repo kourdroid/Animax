@@ -1,37 +1,35 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { FaStar, FaHeart, FaTrophy, FaBookOpen, FaCalendar, FaUsers } from "react-icons/fa";
+import { FaStar, FaPlay, FaTrophy, FaHeart, FaEye, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-export default function TopManga() {
-  const [mangaData, setMangaData] = useState([]);
+export default function TopAnime() {
+  const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [activeTrailer, setActiveTrailer] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("score");
 
   const filters = [
     { id: "all", label: "All" },
-    { id: "manga", label: "Manga" },
-    { id: "novel", label: "Novels" },
-    { id: "lightnovel", label: "Light Novels" },
-    { id: "oneshot", label: "One Shots" },
-    { id: "doujin", label: "Doujin" },
-    { id: "manhwa", label: "Manhwa" },
-    { id: "manhua", label: "Manhua" },
+    { id: "airing", label: "Airing" },
+    { id: "upcoming", label: "Upcoming" },
+    { id: "movie", label: "Movies" },
+    { id: "ova", label: "OVAs" },
   ];
 
   const tabs = [
     { id: "score", label: "Top Rated", icon: FaStar },
-    { id: "popularity", label: "Most Popular", icon: FaUsers },
-    { id: "favorite", label: "Most Favorited", icon: FaHeart },
+    { id: "popularity", label: "Most Popular", icon: FaHeart },
+    { id: "favorite", label: "Most Favorited", icon: FaTrophy },
   ];
 
   const fetchData = async (page = 1) => {
     setIsLoading(true);
     try {
-      let url = `https://api.jikan.moe/v4/top/manga?page=${page}`;
+      let url = `https://api.jikan.moe/v4/top/anime?page=${page}`;
       
       if (selectedFilter !== "all") {
         url += `&type=${selectedFilter}`;
@@ -51,9 +49,31 @@ export default function TopManga() {
       const response = await fetch(url);
       const data = await response.json();
 
-      setMangaData(page === 1 ? data.data : [...mangaData, ...data.data]);
+      // Fetch trailer data for each anime
+      const animeWithTrailers = await Promise.all(
+        data.data.map(async (anime) => {
+          try {
+            const trailerResponse = await fetch(
+              `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
+            );
+            const trailerData = await trailerResponse.json();
+            return {
+              ...anime,
+              trailer_url: trailerData.data?.trailer?.embed_url || null
+            };
+          } catch (error) {
+            console.error("Error fetching trailer:", error);
+            return {
+              ...anime,
+              trailer_url: null
+            };
+          }
+        })
+      );
+
+      setAnimeData(page === 1 ? animeWithTrailers : [...animeData, ...animeWithTrailers]);
     } catch (error) {
-      console.error("Error fetching manga data:", error);
+      console.error("Error fetching anime data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +81,7 @@ export default function TopManga() {
 
   useEffect(() => {
     setPage(1);
-    setMangaData([]);
+    setAnimeData([]);
     fetchData(1);
   }, [selectedFilter, activeTab]);
 
@@ -86,10 +106,10 @@ export default function TopManga() {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 p-8 mb-8">
         <div className="relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-            Top Manga Collection
+            Top Anime Series
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl">
-            Explore the finest manga, light novels, and manhwa. From epic adventures to heartwarming stories.
+            Discover the highest-rated and most popular anime series of all time. From classic masterpieces to modern hits.
           </p>
         </div>
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
@@ -133,55 +153,72 @@ export default function TopManga() {
         ))}
       </div>
 
-      {/* Manga Grid */}
+      {/* Anime Grid */}
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
       >
-        {mangaData.map((manga, index) => (
+        {animeData.map((anime, index) => (
           <motion.div
-            key={manga.mal_id}
+            key={anime.mal_id}
             variants={item}
             className="group relative bg-gradient-to-b from-gray-900/50 to-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
           >
-            <div className="relative aspect-[3/4] overflow-hidden">
-              <img
-                src={manga.images.jpg.large_image_url}
-                alt={manga.title}
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-              />
+            <div className="relative aspect-video overflow-hidden">
+              {activeTrailer === anime.mal_id && anime.trailer_url ? (
+                <iframe
+                  src={anime.trailer_url}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title={`${anime.title} Trailer`}
+                />
+              ) : (
+                <img
+                  src={anime.images.jpg.large_image_url}
+                  alt={anime.title}
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
               
+              {anime.trailer_url && (
+                <button
+                  onClick={() => setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id)}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                    <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
+                  </div>
+                </button>
+              )}
+
               {/* Rank Badge */}
               <div className="absolute top-2 left-2 bg-primary/90 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
                 #{index + 1}
               </div>
-
-              {/* Quick Stats Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <FaStar className="text-yellow-400 w-5 h-5" />
-                    <span className="text-lg font-semibold">{manga.score || 'N/A'}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FaHeart className="text-red-400 w-4 h-4" />
-                    <span className="text-sm">{manga.favorites.toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            <Link href={`/manga/${manga.mal_id}`}>
+            <Link href={`/${anime.mal_id}`}>
               <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <FaStar className="text-yellow-400 w-5 h-5" />
+                    <span className="text-lg font-semibold">{anime.score || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <FaEye className="text-gray-400 w-4 h-4" />
+                    <span className="text-sm text-gray-400">{anime.members.toLocaleString()}</span>
+                  </div>
+                </div>
+
                 <h3 className="font-bold text-xl mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                  {manga.title}
+                  {anime.title}
                 </h3>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {manga.genres.slice(0, 3).map((genre) => (
+                  {anime.genres.slice(0, 3).map((genre) => (
                     <span
                       key={genre.mal_id}
                       className="text-xs px-3 py-1 bg-gray-800 text-gray-300 rounded-full"
@@ -191,23 +228,17 @@ export default function TopManga() {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-400">
-                  <div className="flex items-center gap-2">
-                    <FaBookOpen className="w-4 h-4" />
-                    <span>{manga.chapters || '?'} chapters</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FaUsers className="w-4 h-4" />
-                    <span>{manga.members.toLocaleString()}</span>
-                  </div>
+                <div className="flex justify-between items-center text-sm text-gray-400">
                   <div className="flex items-center gap-2">
                     <FaCalendar className="w-4 h-4" />
-                    <span>{new Date(manga.published.from).getFullYear()}</span>
+                    <span>{new Date(anime.aired.from).getFullYear()}</span>
                   </div>
-                  <span className={`flex items-center justify-end ${
-                    manga.publishing ? "text-green-400" : "text-red-400"
+                  <span className={`px-2 py-1 rounded-full ${
+                    anime.status === "Currently Airing"
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-red-500/20 text-red-400"
                   }`}>
-                    {manga.publishing ? "Publishing" : "Completed"}
+                    {anime.status}
                   </span>
                 </div>
               </div>
@@ -217,7 +248,7 @@ export default function TopManga() {
       </motion.div>
 
       {/* Load More Button */}
-      {!isLoading && mangaData.length > 0 && (
+      {!isLoading && animeData.length > 0 && (
         <div className="flex justify-center mt-8">
           <button
             onClick={() => {
