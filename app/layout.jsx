@@ -6,10 +6,17 @@ import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import Image from "next/image";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen flex flex-col minimal-scroll dark`}>
@@ -26,41 +33,21 @@ export default function RootLayout({ children }) {
               />
             </Link>
             
-            <div className="flex items-center space-x-8">
-              <Link 
-                href="/" 
-                className="hidden md:block hover:text-primary transition-colors font-medium"
-              >
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="/" className="hover:text-primary transition-colors font-medium">
                 Home
               </Link>
-              <Link 
-                href="/recommended" 
-                className="hidden md:block hover:text-primary transition-colors font-medium"
-              >
-                Recommended
-              </Link>
-              <Link 
-                href="/top_anime" 
-                className="hidden md:block hover:text-primary transition-colors font-medium"
-              >
+              <Link href="/top_anime" className="hover:text-primary transition-colors font-medium">
                 Top Anime
               </Link>
-              <Link 
-                href="/top_manga" 
-                className="hidden md:block hover:text-primary transition-colors font-medium"
-              >
+              <Link href="/top_manga" className="hover:text-primary transition-colors font-medium">
                 Top Manga
               </Link>
-              <Link 
-                href="/top_characters" 
-                className="hidden md:block hover:text-primary transition-colors font-medium"
-              >
+              <Link href="/top_characters" className="hover:text-primary transition-colors font-medium">
                 Top Characters
               </Link>
-              <Link 
-                href="/upcoming" 
-                className="hidden md:block hover:text-primary transition-colors font-medium"
-              >
+              <Link href="/upcoming" className="hover:text-primary transition-colors font-medium">
                 Upcoming
               </Link>
               <Link 
@@ -69,6 +56,75 @@ export default function RootLayout({ children }) {
                 aria-label="Search"
               >
                 <FaSearch className="w-5 h-5" />
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={toggleMobileMenu}
+              className="md:hidden p-2 rounded-lg hover:bg-accent/20 transition-colors"
+              aria-label="Toggle mobile menu"
+            >
+              <div className="w-6 h-5 relative flex flex-col justify-between">
+                <span className={`w-full h-0.5 bg-white transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                <span className={`w-full h-0.5 bg-white transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`w-full h-0.5 bg-white transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+              </div>
+            </button>
+          </div>
+
+          {/* Mobile Navigation Menu */}
+          <div className={`md:hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 pointer-events-none'} overflow-hidden bg-background/95 backdrop-blur-md`}>
+            <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
+              <Link 
+                href="/" 
+                className="hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                href="/recommended" 
+                className="hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Recommended
+              </Link>
+              <Link 
+                href="/top_anime" 
+                className="hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Top Anime
+              </Link>
+              <Link 
+                href="/top_manga" 
+                className="hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Top Manga
+              </Link>
+              <Link 
+                href="/top_characters" 
+                className="hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Top Characters
+              </Link>
+              <Link 
+                href="/upcoming" 
+                className="hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Upcoming
+              </Link>
+              <Link 
+                href="/search_anime" 
+                className="inline-flex items-center space-x-2 hover:text-primary transition-colors font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <FaSearch className="w-5 h-5" />
+                <span>Search</span>
               </Link>
             </div>
           </div>

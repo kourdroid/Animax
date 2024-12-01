@@ -1,12 +1,25 @@
 "use client";
-import { FaSadTear, FaArrowUp } from "react-icons/fa";
+import { 
+  FaSadTear, 
+  FaArrowUp, 
+  FaPlay, 
+  FaCalendarAlt, 
+  FaBookOpen, 
+  FaFilm,
+  FaStar,
+  FaTags,
+  FaChevronDown,
+  FaChevronUp
+} from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 
 export default function Upcoming() {
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
+  const [expandedCard, setExpandedCard] = useState(null);
 
   const getRatingContent = (rating) => {
     return rating == null ? "Not yet Rated" : rating;
@@ -28,15 +41,14 @@ export default function Upcoming() {
           }
         },
         {
-          root: null, // Use the viewport as the root
-          rootMargin: "0px", // No margin
-          threshold: 0.5, // Trigger when 50% of the element is visible
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.5,
         }
       );
 
       observer.observe(node);
 
-      // Cleanup the observer when the component unmounts
       return () => {
         observer.disconnect();
       };
@@ -51,20 +63,38 @@ export default function Upcoming() {
       );
       const animeData = await response.json();
 
-      // Check if animeData.data exists and is an array
       if (animeData.data && Array.isArray(animeData.data)) {
-        // Extract unique anime entries based on their IDs
-        const uniqueAnimeData = animeData.data.filter(
+        // Fetch trailer data for each anime
+        const animeWithTrailers = await Promise.all(
+          animeData.data.map(async (anime) => {
+            try {
+              const trailerResponse = await fetch(
+                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
+              );
+              const trailerData = await trailerResponse.json();
+              return {
+                ...anime,
+                trailer_url: trailerData.data?.trailer?.embed_url || null,
+              };
+            } catch (error) {
+              console.error("Error fetching trailer:", error);
+              return {
+                ...anime,
+                trailer_url: null,
+              };
+            }
+          })
+        );
+
+        const uniqueAnimeData = animeWithTrailers.filter(
           (item) => !fetchedAnimeIds.has(item.mal_id)
         );
 
-        // Update the set of fetched anime IDs
         setFetchedAnimeIds(
           (prevIds) =>
             new Set([...prevIds, ...uniqueAnimeData.map((item) => item.mal_id)])
         );
 
-        // Remove duplicates from the animeData state
         setAnimeData((prevData) => {
           const newData = [...prevData, ...uniqueAnimeData];
           const uniqueData = Array.from(
@@ -73,7 +103,6 @@ export default function Upcoming() {
           return uniqueData;
         });
       } else {
-        // Handle the case where animeData.data is not as expected
         console.error("Invalid API response format:", animeData);
       }
     } finally {
@@ -83,7 +112,7 @@ export default function Upcoming() {
 
   useEffect(() => {
     fetchData();
-  }, [page, fetchData]);
+  }, [page]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -92,107 +121,189 @@ export default function Upcoming() {
     });
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 },
+  };
+
   return (
-    <div className="container mx-auto px-4 py-10">
-      <div className="relative w-max mx-auto mb-12">
-        <h2 className="text-center text-3xl font-bold bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
-          Upcoming Anime
-        </h2>
-        <div className="absolute bottom-0 left-0 right-0 w-1/2 mx-auto h-1 bg-gradient-to-r from-red-500 to-red-700"></div>
+    <div className="min-h-screen p-6 space-y-8">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 p-8 mb-8">
+        <div className="relative z-10">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+            Upcoming Anime
+          </h1>
+          <p className="text-lg text-gray-300 max-w-2xl">
+            Discover the next big hits in anime. Stay ahead with upcoming releases and be the first to know about new series.
+          </p>
+        </div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Anime Grid */}
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 gap-8"
+      >
         {animeData.map((item, index) => (
-          <div
+          <motion.div
             key={item.mal_id}
-            className="group relative bg-black/20 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10"
+            variants={item}
+            className={`group relative bg-gradient-to-b from-gray-900/50 to-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 ${
+              expandedCard === item.mal_id ? 'row-span-2' : ''
+            }`}
             ref={index === animeData.length - 1 ? lastAnimeElementRef : null}
           >
-            <div className="flex flex-col md:flex-row gap-6 p-6">
-              <div className="w-full md:w-2/5">
-                <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
-                  <img
-                    className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
-                    src={item.images.webp.large_image_url}
-                    alt={item.title}
-                    width={300}
-                    height={400}
-                  />
-                </div>
-              </div>
-
-              <div className="w-full md:w-3/5 space-y-4">
-                <div className="space-y-2">
-                  <div className="bg-red-600/90 text-white text-sm font-medium w-max px-2.5 py-1 rounded-md">
-                    {item.type}
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-bold line-clamp-2 group-hover:text-red-500 transition-colors">
-                    {item.title}
-                  </h2>
-                </div>
-
-                <p className="text-sm text-gray-400 line-clamp-3">
-                  {item.synopsis}
-                </p>
-
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="space-y-2">
-                    <div className="bg-white/5 rounded-lg p-2.5">
-                      <span className="text-gray-400">Release Date</span>
-                      <div className="font-medium text-red-500">
-                        {item.aired.from ? (
-                          `${item.aired.prop.from.day}/${item.aired.prop.from.month}/${item.aired.prop.from.year}`
-                        ) : (
-                          "TBA"
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="bg-white/5 rounded-lg p-2.5">
-                      <span className="text-gray-400">Source</span>
-                      <div className="font-medium text-red-500">
-                        {item.source}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="bg-white/5 rounded-lg p-2.5">
-                      <span className="text-gray-400">Studio</span>
-                      <div className="font-medium text-red-500">
-                        {item.studios.length > 0
-                          ? item.studios.map((studio) => studio.name).join(", ")
-                          : "TBA"}
-                      </div>
-                    </div>
-
-                    <div className="bg-white/5 rounded-lg p-2.5">
-                      <span className="text-gray-400">Rating</span>
-                      <div className="font-medium text-red-500">
-                        {getRatingContent(item.rating)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-2.5">
-                  <span className="text-gray-400">Genres</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {item.genres.map((genre) => (
-                      <span
-                        key={genre.mal_id}
-                        className="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded-md"
+            <div className="flex flex-col gap-6 p-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="w-full md:w-2/5">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg group">
+                    <img
+                      className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                      src={item.images.webp.large_image_url}
+                      alt={item.title}
+                      width={300}
+                      height={400}
+                    />
+                    {item.trailer_url && (
+                      <button
+                        onClick={() => setExpandedCard(expandedCard === item.mal_id ? null : item.mal_id)}
+                        className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       >
-                        {genre.name}
-                      </span>
-                    ))}
+                        <div className="w-16 h-16 flex items-center justify-center rounded-full bg-red-500 text-white">
+                          <FaPlay className="w-6 h-6 ml-1" />
+                        </div>
+                        <span className="text-white mt-2 text-sm font-medium">Watch Trailer</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="w-full md:w-3/5 space-y-4">
+                  <div className="space-y-2">
+                    <div className="bg-red-600/90 text-white text-sm font-medium w-max px-2.5 py-1 rounded-md">
+                      {item.type}
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-bold line-clamp-2 group-hover:text-red-500 transition-colors">
+                      {item.title}
+                    </h2>
+                  </div>
+
+                  <p className="text-sm text-gray-400 line-clamp-3">
+                    {item.synopsis}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="space-y-2">
+                      <div className="bg-white/5 rounded-lg p-2.5">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <FaCalendarAlt className="text-red-500" />
+                          <span>Release Date</span>
+                        </div>
+                        <div className="font-medium text-red-500">
+                          {item.aired.from
+                            ? `${item.aired.prop.from.day}/${item.aired.prop.from.month}/${item.aired.prop.from.year}`
+                            : "TBA"}
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-2.5">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <FaBookOpen className="text-red-500" />
+                          <span>Source</span>
+                        </div>
+                        <div className="font-medium text-red-500">
+                          {item.source}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="bg-white/5 rounded-lg p-2.5">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <FaFilm className="text-red-500" />
+                          <span>Studio</span>
+                        </div>
+                        <div className="font-medium text-red-500">
+                          {item.studios.length > 0
+                            ? item.studios.map((studio) => studio.name).join(", ")
+                            : "TBA"}
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-2.5">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <FaStar className="text-red-500" />
+                          <span>Rating</span>
+                        </div>
+                        <div className="font-medium text-red-500">
+                          {getRatingContent(item.rating)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/5 rounded-lg p-2.5">
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <FaTags className="text-red-500" />
+                      <span>Genres</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {item.genres.map((genre) => (
+                        <span
+                          key={genre.mal_id}
+                          className="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded-md"
+                        >
+                          {genre.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Trailer Section */}
+              {expandedCard === item.mal_id && item.trailer_url && (
+                <div className="w-full space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-red-500">
+                      <FaPlay className="w-4 h-4" />
+                      <span className="font-medium">Trailer</span>
+                    </div>
+                    <button 
+                      onClick={() => setExpandedCard(null)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <FaChevronUp className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="w-full aspect-video rounded-lg overflow-hidden bg-black/50">
+                    <iframe
+                      src={item.trailer_url}
+                      className="w-full h-full"
+                      allowFullScreen
+                      allow="autoplay; encrypted-media"
+                    ></iframe>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {isLoading && (
         <div className="flex justify-center items-center mt-8">
@@ -200,11 +311,12 @@ export default function Upcoming() {
         </div>
       )}
 
+      {/* Scroll to Top Button */}
       <button
         onClick={handleScrollToTop}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-red-500 to-red-700 text-white p-3 rounded-full shadow-lg hover:shadow-red-500/25 transition-all duration-300 hover:-translate-y-1"
+        className="fixed bottom-8 right-8 bg-red-500 text-white p-3 rounded-full shadow-lg hover:bg-red-600 transition-colors"
       >
-        <FaArrowUp className="text-lg" />
+        <FaArrowUp />
       </button>
     </div>
   );

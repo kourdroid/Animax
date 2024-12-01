@@ -4,38 +4,6 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    --primary: 346.8 77.2% 49.8%;
-    --primary-foreground: 355.7 100% 97.3%;
-
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 346.8 77.2% 49.8%;
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
     --background: 20 14.3% 4.1%;
     --foreground: 0 0% 95%;
 
@@ -63,16 +31,50 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 346.8 77.2% 49.8%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 5.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 346.8 77.2% 49.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 346.8 77.2% 49.8%;
+    --accent-foreground: 355.7 100% 97.3%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 346.8 77.2% 49.8%;
   }
 }
 
-body{
-  color: white;
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
-  --sb-track-color: #1f1f1f;
-  --sb-thumb-color: #dc0000;
+  --sb-track-color: hsl(var(--muted));
+  --sb-thumb-color: hsl(var(--primary));
   --sb-size: 4px;
 
   scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
@@ -90,7 +92,6 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background: var(--sb-thumb-color);
   border-radius: 10px;
-
 }
 
 @layer base {
@@ -99,8 +100,72 @@ body::-webkit-scrollbar-thumb {
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+.minimal-scroll {
+  scrollbar-width: thin;
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:hover:shadow-primary/5;
+  background: hsl(var(--card));
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.dark .card-hover {
+  background: linear-gradient(to bottom right, 
+    hsl(var(--card)), 
+    hsl(0 0% 7.9%)
+  );
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+}
+
+.card-hover:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  background: hsl(var(--card));
+}
+
+.dark .card-hover:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+}
+
+/* Navigation link styles */
+.nav-link {
+  @apply relative hover:text-primary transition-colors;
+}
+
+.nav-link::after {
+  content: '';
+  @apply absolute left-0 right-0 bottom-0 h-0.5 bg-primary scale-x-0 transition-transform origin-right;
+}
+
+.nav-link:hover::after {
+  @apply scale-x-100 origin-left;
+}
+
+/* Button styles */
+.btn {
+  @apply px-4 py-2 rounded-md transition-all duration-200 
+         hover:shadow-md active:scale-95
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+}
+
+/* Search input styles */
+.search-input {
+  @apply w-full px-4 py-2 rounded-md border border-input
+         bg-background text-foreground
+         focus:outline-none focus:ring-2 focus:ring-primary/50
+         placeholder:text-muted-foreground;
 }
 
 @layer utilities {
@@ -167,4 +232,21 @@ body::-webkit-scrollbar-thumb {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Navigation styles */
+.nav-item {
+  @apply text-foreground hover:text-primary transition-colors;
+}
+
+/* Better focus styles */
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
