@@ -17,7 +17,6 @@ export default function TopManga() {
     { id: "novel", label: "Novels" },
     { id: "lightnovel", label: "Light Novels" },
     { id: "oneshot", label: "One Shots" },
-    { id: "doujin", label: "Doujin" },
     { id: "manhwa", label: "Manhwa" },
     { id: "manhua", label: "Manhua" },
   ];
