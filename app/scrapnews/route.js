@@ -1,37 +1,49 @@
 import puppeteer from "puppeteer";
 
-export default async function handler(req, res) {
-  const { links } = req.body; // Assuming you send an array of links in the request body
+import { NextResponse } from 'next/server';
 
+export async function POST(req) {
+  let browser;
   try {
-    // Launch a headless browser
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const { links } = await req.json();
 
-    // Array to store scraped data
-    const scrapedData = [];
-
-    // Loop through each link and scrape data
-    for (const link of links) {
-      await page.goto(link, { waitUntil: "domcontentloaded" });
-
-      // Example: Extracting title and content, adjust based on your HTML structure
-      const title = await page.$eval("h1", (h1) => h1.innerText);
-      const content = await page.$eval(
-        ".content",
-        (content) => content.innerText
-      );
-
-      scrapedData.push({ link, title, content });
+    if (!links || !Array.isArray(links)) {
+      return NextResponse.json({ error: "Links array is required" }, { status: 400 });
     }
 
-    // Close the browser
-    await browser.close();
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    const scrapedData = [];
 
-    // Send the scraped data in the response
-    res.status(200).json({ data: scrapedData });
+    for (const link of links) {
+      try {
+        const url = new URL(link);
+        if (!['http:', 'https:'].includes(url.protocol)) {
+            continue; // Skip non-http/https links
+        }
+
+        // Basic SSRF protection: Don't allow local addresses (incomplete but a start)
+        if (['localhost', '127.0.0.1', '::1'].includes(url.hostname)) {
+             continue;
+        }
+
+        await page.goto(link, { waitUntil: "domcontentloaded", timeout: 10000 });
+
+        const title = await page.$eval("h1", (h1) => h1.innerText).catch(() => null);
+        const content = await page.$eval(".content", (content) => content.innerText).catch(() => null);
+
+        scrapedData.push({ link, title, content });
+      } catch (err) {
+        console.error(`Error scraping ${link}:`, err.message);
+        scrapedData.push({ link, error: "Failed to scrape" });
+      }
+    }
+
+    await browser.close();
+    return NextResponse.json({ data: scrapedData });
   } catch (error) {
     console.error("Error during scraping:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    if (browser) await browser.close();
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

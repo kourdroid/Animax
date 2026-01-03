@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
 function Search() {
   const [query, setQuery] = useState("");
@@ -8,10 +7,11 @@ function Search() {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.get(
+      const response = await fetch(
         `https://api.jikan.moe/v4/anime?q=${query}`
       );
-      setResults(response.data.data || []);
+      const data = await response.json();
+      setResults(data.data || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

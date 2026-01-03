@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 import { FaSearch, FaStar } from "react-icons/fa";
@@ -28,10 +27,11 @@ function Search() {
 
     setIsLoading(true);
     try {
-      const response = await axios.get(
+      const response = await fetch(
         `https://api.jikan.moe/v4/anime?q=${debouncedQuery}&sfw=${true}&sort=desc&order_by=score&start_date=2005-01-01`
       );
-      setResults(response.data.data || []);
+      const data = await response.json();
+      setResults(data.data || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
