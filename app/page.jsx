@@ -159,7 +159,7 @@ export default function Home() {
               <div className="group cursor-pointer backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 rounded-full p-5 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
                 <div className="flex items-center justify-center space-x-3">
                   <span className="text-xl font-medium">Search Anime</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </div>
@@ -207,6 +207,7 @@ export default function Home() {
                       setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
                     }}
                     className="absolute inset-0 flex items-center justify-center"
+                    aria-label={`Play trailer for ${anime.title}`}
                   >
                     <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
                       <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
@@ -265,7 +266,7 @@ export default function Home() {
       </motion.div>
       
       {isLoading && (
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-8" role="status" aria-label="Loading more anime">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       )}
@@ -273,6 +274,7 @@ export default function Home() {
       <button
         onClick={handleScrollToTop}
         className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
+        aria-label="Scroll to top"
       >
         <FaArrowUp className="w-6 h-6" />
       </button>
