@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
-import { FaSearch, FaStar } from "react-icons/fa";
+import { FaSearch, FaStar, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 function Search() {
@@ -77,12 +77,31 @@ function Search() {
             <div className="relative">
               <input
                 type="text"
+                aria-label="Search anime"
                 placeholder="Search for anime..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full h-14 px-6 pr-12 text-white bg-black/50 rounded-full outline-none border border-white/10 focus:border-red-500 transition-all duration-300 backdrop-blur-sm"
               />
-              <FaSearch className="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 group-hover:text-red-500 transition-colors duration-300" />
+              <AnimatePresence>
+                {query ? (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => {
+                      setQuery("");
+                      // Optionally focus input here if we had a ref
+                    }}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors p-1"
+                    aria-label="Clear search"
+                  >
+                    <FaTimes />
+                  </motion.button>
+                ) : (
+                  <FaSearch className="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 group-hover:text-red-500 transition-colors duration-300 pointer-events-none" />
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </motion.div>

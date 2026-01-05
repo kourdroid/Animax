@@ -1,0 +1,8 @@
+   ▲ Next.js 14.0.4
+   - Local:        http://localhost:3000
+
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+ ✓ Ready in 8.8s
+ ○ Compiling /search_anime ...
+ ✓ Compiled /search_anime in 12s (1321 modules)
+ ✓ Compiled in 1376ms (613 modules)
