@@ -77,6 +77,7 @@ function Search() {
             <div className="relative">
               <input
                 type="text"
+                aria-label="Search for anime"
                 placeholder="Search for anime..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -111,7 +112,7 @@ function Search() {
                   variants={item}
                   className="group relative bg-gradient-to-b from-gray-900/50 to-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden">
+                  <Link href={result.mal_id.toString()} className="block relative aspect-[3/4] overflow-hidden" aria-label={`View details for ${result.title}`}>
                     <Image
                       src={result.images.webp.large_image_url}
                       alt={result.title}
@@ -136,7 +137,7 @@ function Search() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
 
                   <Link href={result.mal_id.toString()}>
                     <div className="p-6">
