@@ -1,10 +1,15 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function Home() {
+  // ⚡ Performance Optimization:
+  // 1. Removed N+1 API fetching: Previously fetched list, then iterated to fetch details for each item.
+  //    Now uses data directly from the list endpoint which already contains trailer URLs.
+  // 2. Optimized Images: Replaced <img> with Next.js <Image /> for automatic resizing and lazy loading.
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -51,27 +56,11 @@ export default function Home() {
           (item) => !fetchedAnimeIds.has(item.mal_id)
         );
 
-        // Fetch trailer data for each anime
-        const animeWithTrailers = await Promise.all(
-          uniqueAnimeData.map(async (anime) => {
-            try {
-              const trailerResponse = await fetch(
-                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
-              );
-              const trailerData = await trailerResponse.json();
-              return {
-                ...anime,
-                trailer_url: trailerData.data?.trailer?.embed_url || null
-              };
-            } catch (error) {
-              console.error("Error fetching trailer:", error);
-              return {
-                ...anime,
-                trailer_url: null
-              };
-            }
-          })
-        );
+        // Map data to include trailer_url directly from the API response
+        const animeWithTrailers = uniqueAnimeData.map((anime) => ({
+          ...anime,
+          trailer_url: anime.trailer?.embed_url || null
+        }));
 
         setFetchedAnimeIds(
           (prevIds) =>
@@ -93,6 +82,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchData(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const handleScrollToTop = () => {
@@ -192,10 +182,12 @@ export default function Home() {
                     title={`${anime.title} Trailer`}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={anime.images.jpg.large_image_url}
                     alt={anime.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
