@@ -78,6 +78,7 @@ function Search() {
               <input
                 type="text"
                 placeholder="Search for anime..."
+                aria-label="Search for anime"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full h-14 px-6 pr-12 text-white bg-black/50 rounded-full outline-none border border-white/10 focus:border-red-500 transition-all duration-300 backdrop-blur-sm"
