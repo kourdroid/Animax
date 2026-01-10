@@ -78,6 +78,7 @@ function Search() {
               <input
                 type="text"
                 placeholder="Search for anime..."
+                aria-label="Search for anime"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full h-14 px-6 pr-12 text-white bg-black/50 rounded-full outline-none border border-white/10 focus:border-red-500 transition-all duration-300 backdrop-blur-sm"
@@ -93,6 +94,8 @@ function Search() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              role="status"
+              aria-live="polite"
               className="flex flex-col items-center justify-center my-20 gap-4"
             >
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
