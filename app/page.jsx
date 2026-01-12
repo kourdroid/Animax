@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -9,6 +10,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
+  const fetchedAnimeIdsRef = useRef(new Set()); // Use Ref to track IDs without triggering re-renders or dependency cycles
   const [activeTrailer, setActiveTrailer] = useState(null);
 
   const lastAnimeElementRef = useCallback(
@@ -39,7 +41,7 @@ export default function Home() {
     [isLoading]
   );
 
-  const fetchData = async (page = 1) => {
+  const fetchData = useCallback(async (page = 1) => {
     try {
       const response = await fetch(
         `https://api.jikan.moe/v4/top/anime?page=${page}`
@@ -48,35 +50,21 @@ export default function Home() {
 
       if (responseData?.data) {
         const uniqueAnimeData = responseData.data.filter(
-          (item) => !fetchedAnimeIds.has(item.mal_id)
+          (item) => !fetchedAnimeIdsRef.current.has(item.mal_id)
         );
 
-        // Fetch trailer data for each anime
-        const animeWithTrailers = await Promise.all(
-          uniqueAnimeData.map(async (anime) => {
-            try {
-              const trailerResponse = await fetch(
-                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
-              );
-              const trailerData = await trailerResponse.json();
-              return {
-                ...anime,
-                trailer_url: trailerData.data?.trailer?.embed_url || null
-              };
-            } catch (error) {
-              console.error("Error fetching trailer:", error);
-              return {
-                ...anime,
-                trailer_url: null
-              };
-            }
-          })
-        );
+        // Optimization: Use trailer data directly from the list response
+        // This avoids N+1 API calls (saving ~25 requests per page load)
+        const animeWithTrailers = uniqueAnimeData.map((anime) => ({
+          ...anime,
+          trailer_url: anime.trailer?.embed_url || null
+        }));
 
-        setFetchedAnimeIds(
-          (prevIds) =>
-            new Set([...prevIds, ...animeWithTrailers.map((item) => item.mal_id)])
-        );
+        const newIds = animeWithTrailers.map((item) => item.mal_id);
+        newIds.forEach(id => fetchedAnimeIdsRef.current.add(id));
+
+        // Update state for consistency, though ref is used for filtering
+        setFetchedAnimeIds(new Set(fetchedAnimeIdsRef.current));
 
         setAnimeData((prevData) => {
           const newData = [...prevData, ...animeWithTrailers];
@@ -89,11 +77,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []); // Empty dependency array as we use ref
 
   useEffect(() => {
     fetchData(page);
-  }, [page]);
+  }, [fetchData, page]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -192,10 +180,12 @@ export default function Home() {
                     title={`${anime.title} Trailer`}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={anime.images.jpg.large_image_url}
                     alt={anime.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
