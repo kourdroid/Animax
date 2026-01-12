@@ -206,9 +206,10 @@ export default function Home() {
                       e.preventDefault();
                       setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
                     }}
-                    className="absolute inset-0 flex items-center justify-center"
+                    aria-label={activeTrailer === anime.mal_id ? "Stop trailer" : `Play trailer for ${anime.title}`}
+                    className="absolute inset-0 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/50"
                   >
-                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shadow-lg">
                       <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
                     </div>
                   </button>
@@ -272,7 +273,8 @@ export default function Home() {
 
       <button
         onClick={handleScrollToTop}
-        className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
+        aria-label="Scroll to top"
+        className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
       >
         <FaArrowUp className="w-6 h-6" />
       </button>
