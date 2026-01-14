@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -8,7 +9,8 @@ export default function Home() {
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
+  // Use useRef to track fetched IDs to avoid re-renders and dependency loops
+  const fetchedAnimeIds = useRef(new Set());
   const [activeTrailer, setActiveTrailer] = useState(null);
 
   const lastAnimeElementRef = useCallback(
@@ -39,47 +41,30 @@ export default function Home() {
     [isLoading]
   );
 
-  const fetchData = async (page = 1) => {
+  const fetchData = useCallback(async (pageNum) => {
     try {
       const response = await fetch(
-        `https://api.jikan.moe/v4/top/anime?page=${page}`
+        `https://api.jikan.moe/v4/top/anime?page=${pageNum}`
       );
       const responseData = await response.json();
 
       if (responseData?.data) {
         const uniqueAnimeData = responseData.data.filter(
-          (item) => !fetchedAnimeIds.has(item.mal_id)
+          (item) => !fetchedAnimeIds.current.has(item.mal_id)
         );
 
-        // Fetch trailer data for each anime
-        const animeWithTrailers = await Promise.all(
-          uniqueAnimeData.map(async (anime) => {
-            try {
-              const trailerResponse = await fetch(
-                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
-              );
-              const trailerData = await trailerResponse.json();
-              return {
-                ...anime,
-                trailer_url: trailerData.data?.trailer?.embed_url || null
-              };
-            } catch (error) {
-              console.error("Error fetching trailer:", error);
-              return {
-                ...anime,
-                trailer_url: null
-              };
-            }
-          })
-        );
+        // Optimization: Use the trailer URL directly from the top anime response
+        // instead of making a separate request for each anime.
+        const processedData = uniqueAnimeData.map(anime => ({
+            ...anime,
+            trailer_url: anime.trailer?.embed_url || null
+        }));
 
-        setFetchedAnimeIds(
-          (prevIds) =>
-            new Set([...prevIds, ...animeWithTrailers.map((item) => item.mal_id)])
-        );
+        // Update the set of fetched IDs
+        processedData.forEach(item => fetchedAnimeIds.current.add(item.mal_id));
 
         setAnimeData((prevData) => {
-          const newData = [...prevData, ...animeWithTrailers];
+          const newData = [...prevData, ...processedData];
           const uniqueData = Array.from(
             new Set(newData.map((item) => item.mal_id))
           ).map((mal_id) => newData.find((item) => item.mal_id === mal_id));
@@ -89,11 +74,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData(page);
-  }, [page]);
+  }, [page, fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -192,10 +177,12 @@ export default function Home() {
                     title={`${anime.title} Trailer`}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={anime.images.jpg.large_image_url}
                     alt={anime.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
