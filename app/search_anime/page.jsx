@@ -77,6 +77,7 @@ function Search() {
             <div className="relative">
               <input
                 type="text"
+                aria-label="Search for anime"
                 placeholder="Search for anime..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -93,6 +94,7 @@ function Search() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              role="status"
               className="flex flex-col items-center justify-center my-20 gap-4"
             >
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>

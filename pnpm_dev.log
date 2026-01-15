@@ -1,0 +1,15 @@
+
+> animax@0.1.0 dev /app
+> next dev
+
+   ▲ Next.js 14.0.4
+   - Local:        http://localhost:3000
+
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
+ ✓ Ready in 3.4s
+ ○ Compiling / ...
+ ✓ Compiled / in 6.5s (1141 modules)
+ ✓ Compiled in 832ms (563 modules)
+ ○ Compiling /search_anime ...
+ ✓ Compiled /search_anime in 1535ms (1306 modules)
