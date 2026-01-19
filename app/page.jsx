@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -192,10 +193,12 @@ export default function Home() {
                     title={`${anime.title} Trailer`}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={anime.images.jpg.large_image_url}
                     alt={anime.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
@@ -206,6 +209,7 @@ export default function Home() {
                       e.preventDefault();
                       setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
                     }}
+                    aria-label={`Play trailer for ${anime.title}`}
                     className="absolute inset-0 flex items-center justify-center"
                   >
                     <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
@@ -272,6 +276,7 @@ export default function Home() {
 
       <button
         onClick={handleScrollToTop}
+        aria-label="Scroll to top"
         className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
       >
         <FaArrowUp className="w-6 h-6" />
