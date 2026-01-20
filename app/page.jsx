@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -8,7 +9,7 @@ export default function Home() {
   const [animeData, setAnimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [fetchedAnimeIds, setFetchedAnimeIds] = useState(new Set());
+  const fetchedAnimeIds = useRef(new Set());
   const [activeTrailer, setActiveTrailer] = useState(null);
 
   const lastAnimeElementRef = useCallback(
@@ -39,16 +40,16 @@ export default function Home() {
     [isLoading]
   );
 
-  const fetchData = async (page = 1) => {
+  const fetchData = useCallback(async (pageToFetch = 1) => {
     try {
       const response = await fetch(
-        `https://api.jikan.moe/v4/top/anime?page=${page}`
+        `https://api.jikan.moe/v4/top/anime?page=${pageToFetch}`
       );
       const responseData = await response.json();
 
       if (responseData?.data) {
         const uniqueAnimeData = responseData.data.filter(
-          (item) => !fetchedAnimeIds.has(item.mal_id)
+          (item) => !fetchedAnimeIds.current.has(item.mal_id)
         );
 
         // Fetch trailer data for each anime
@@ -73,10 +74,7 @@ export default function Home() {
           })
         );
 
-        setFetchedAnimeIds(
-          (prevIds) =>
-            new Set([...prevIds, ...animeWithTrailers.map((item) => item.mal_id)])
-        );
+        animeWithTrailers.forEach((item) => fetchedAnimeIds.current.add(item.mal_id));
 
         setAnimeData((prevData) => {
           const newData = [...prevData, ...animeWithTrailers];
@@ -89,11 +87,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData(page);
-  }, [page]);
+  }, [page, fetchData]);
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -159,7 +157,7 @@ export default function Home() {
               <div className="group cursor-pointer backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 rounded-full p-5 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-white/10">
                 <div className="flex items-center justify-center space-x-3">
                   <span className="text-xl font-medium">Search Anime</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="h-6 w-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </div>
@@ -192,10 +190,12 @@ export default function Home() {
                     title={`${anime.title} Trailer`}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={anime.images.jpg.large_image_url}
                     alt={anime.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
@@ -206,6 +206,7 @@ export default function Home() {
                       e.preventDefault();
                       setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
                     }}
+                    aria-label={activeTrailer === anime.mal_id ? `Stop trailer for ${anime.title}` : `Play trailer for ${anime.title}`}
                     className="absolute inset-0 flex items-center justify-center"
                   >
                     <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
@@ -265,13 +266,15 @@ export default function Home() {
       </motion.div>
       
       {isLoading && (
-        <div className="flex justify-center mt-8">
+        <div role="status" className="flex justify-center mt-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="sr-only">Loading more anime...</span>
         </div>
       )}
 
       <button
         onClick={handleScrollToTop}
+        aria-label="Scroll to top"
         className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
       >
         <FaArrowUp className="w-6 h-6" />
