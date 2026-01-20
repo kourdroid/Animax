@@ -51,27 +51,12 @@ export default function Home() {
           (item) => !fetchedAnimeIds.has(item.mal_id)
         );
 
-        // Fetch trailer data for each anime
-        const animeWithTrailers = await Promise.all(
-          uniqueAnimeData.map(async (anime) => {
-            try {
-              const trailerResponse = await fetch(
-                `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
-              );
-              const trailerData = await trailerResponse.json();
-              return {
-                ...anime,
-                trailer_url: trailerData.data?.trailer?.embed_url || null
-              };
-            } catch (error) {
-              console.error("Error fetching trailer:", error);
-              return {
-                ...anime,
-                trailer_url: null
-              };
-            }
-          })
-        );
+        // Extract trailer data directly from the list response
+        // Optimization: Removed N+1 fetch for each anime details since trailer.embed_url is in the list response
+        const animeWithTrailers = uniqueAnimeData.map((anime) => ({
+          ...anime,
+          trailer_url: anime.trailer?.embed_url || null
+        }));
 
         setFetchedAnimeIds(
           (prevIds) =>
