@@ -49,27 +49,12 @@ export default function TopAnime() {
       const response = await fetch(url);
       const data = await response.json();
 
-      // Fetch trailer data for each anime
-      const animeWithTrailers = await Promise.all(
-        data.data.map(async (anime) => {
-          try {
-            const trailerResponse = await fetch(
-              `https://api.jikan.moe/v4/anime/${anime.mal_id}/full`
-            );
-            const trailerData = await trailerResponse.json();
-            return {
-              ...anime,
-              trailer_url: trailerData.data?.trailer?.embed_url || null
-            };
-          } catch (error) {
-            console.error("Error fetching trailer:", error);
-            return {
-              ...anime,
-              trailer_url: null
-            };
-          }
-        })
-      );
+      // OPTIMIZATION: Use embedded trailer URL from list response instead of fetching individually
+      // This eliminates N+1 API calls
+      const animeWithTrailers = data.data.map((anime) => ({
+        ...anime,
+        trailer_url: anime.trailer?.embed_url || null,
+      }));
 
       setAnimeData(page === 1 ? animeWithTrailers : [...animeData, ...animeWithTrailers]);
     } catch (error) {
