@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
+import { FaStar, FaArrowUp, FaPlay, FaCalendar, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -185,33 +185,47 @@ export default function Home() {
             <div className="relative">
               <div className="relative aspect-video overflow-hidden">
                 {activeTrailer === anime.mal_id && anime.trailer_url ? (
-                  <iframe
-                    src={anime.trailer_url}
-                    className="w-full h-full"
-                    allowFullScreen
-                    title={`${anime.title} Trailer`}
-                  />
+                  <>
+                    <iframe
+                      src={anime.trailer_url}
+                      className="w-full h-full relative z-10"
+                      allowFullScreen
+                      title={`${anime.title} Trailer`}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTrailer(null);
+                      }}
+                      className="absolute top-2 right-2 z-20 p-2 bg-black/70 hover:bg-black/90 text-white rounded-full transition-all duration-200 backdrop-blur-sm"
+                      aria-label="Close trailer"
+                    >
+                      <FaTimes className="w-4 h-4" />
+                    </button>
+                  </>
                 ) : (
-                  <img
-                    src={anime.images.jpg.large_image_url}
-                    alt={anime.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
-                
-                {anime.trailer_url && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
-                    }}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
-                      <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
-                    </div>
-                  </button>
+                  <>
+                    <img
+                      src={anime.images.jpg.large_image_url}
+                      alt={anime.title}
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                    {anime.trailer_url && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setActiveTrailer(anime.mal_id);
+                        }}
+                        className="absolute inset-0 flex items-center justify-center group/play"
+                        aria-label={`Play trailer for ${anime.title}`}
+                      >
+                        <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover/play:scale-110 transition-transform duration-300 shadow-lg shadow-red-600/20">
+                          <FaPlay className="text-white text-xl ml-1" />
+                        </div>
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -265,14 +279,20 @@ export default function Home() {
       </motion.div>
       
       {isLoading && (
-        <div className="flex justify-center mt-8">
+        <div
+          className="flex justify-center mt-8"
+          role="status"
+          aria-label="Loading more anime"
+        >
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="sr-only">Loading more anime...</span>
         </div>
       )}
 
       <button
         onClick={handleScrollToTop}
-        className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
+        className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm z-50 focus:ring-2 focus:ring-white/50 focus:outline-none"
+        aria-label="Scroll to top"
       >
         <FaArrowUp className="w-6 h-6" />
       </button>
