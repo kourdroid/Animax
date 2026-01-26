@@ -207,6 +207,7 @@ export default function Home() {
                       setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
                     }}
                     className="absolute inset-0 flex items-center justify-center"
+                    aria-label={activeTrailer === anime.mal_id ? "Close trailer" : "Play trailer"}
                   >
                     <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
                       <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
@@ -265,14 +266,16 @@ export default function Home() {
       </motion.div>
       
       {isLoading && (
-        <div className="flex justify-center mt-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="flex justify-center mt-8" role="status">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" aria-hidden="true"></div>
+          <span className="sr-only">Loading more anime...</span>
         </div>
       )}
 
       <button
         onClick={handleScrollToTop}
         className="fixed bottom-8 right-8 bg-primary/80 hover:bg-primary p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
+        aria-label="Scroll to top"
       >
         <FaArrowUp className="w-6 h-6" />
       </button>
