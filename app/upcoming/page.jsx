@@ -57,6 +57,7 @@ export default function Upcoming() {
   );
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(
         `https://api.jikan.moe/v4/seasons/upcoming?page=${page}`
@@ -290,8 +291,9 @@ export default function Upcoming() {
       </motion.div>
 
       {isLoading && (
-        <div className="flex justify-center items-center mt-8">
+        <div className="flex justify-center items-center mt-8" role="status">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+          <span className="sr-only">Loading...</span>
         </div>
       )}
 

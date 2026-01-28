@@ -40,6 +40,7 @@ export default function Home() {
   );
 
   const fetchData = async (page = 1) => {
+    setIsLoading(true);
     try {
       const response = await fetch(
         `https://api.jikan.moe/v4/top/anime?page=${page}`
@@ -250,8 +251,9 @@ export default function Home() {
       </motion.div>
       
       {isLoading && (
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-8" role="status">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="sr-only">Loading...</span>
         </div>
       )}
 
