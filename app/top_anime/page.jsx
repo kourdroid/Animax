@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaPlay, FaTrophy, FaHeart, FaEye, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -159,10 +160,12 @@ export default function TopAnime() {
                   title={`${anime.title} Trailer`}
                 />
               ) : (
-                <img
+                <Image
                   src={anime.images.jpg.large_image_url}
                   alt={anime.title}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
