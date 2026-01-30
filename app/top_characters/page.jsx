@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FaHeart, FaTrophy, FaUserAlt, FaTheaterMasks, FaFilm, FaTv } from "react-icons/fa";
+import { FaHeart, FaTrophy, FaUserAlt, FaTheaterMasks } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function TopCharacters() {
@@ -34,26 +34,7 @@ export default function TopCharacters() {
       const response = await fetch(url);
       const data = await response.json();
 
-      // Fetch additional details for each character
-      const charactersWithDetails = await Promise.all(
-        data.data.map(async (character) => {
-          try {
-            const detailsResponse = await fetch(
-              `https://api.jikan.moe/v4/characters/${character.mal_id}/full`
-            );
-            const detailsData = await detailsResponse.json();
-            return {
-              ...character,
-              details: detailsData.data
-            };
-          } catch (error) {
-            console.error("Error fetching character details:", error);
-            return character;
-          }
-        })
-      );
-
-      setCharactersData(page === 1 ? charactersWithDetails : [...charactersData, ...charactersWithDetails]);
+      setCharactersData(page === 1 ? data.data : [...charactersData, ...data.data]);
     } catch (error) {
       console.error("Error fetching characters data:", error);
     } finally {
@@ -168,10 +149,6 @@ export default function TopCharacters() {
                     <FaHeart className="text-red-400 w-5 h-5" />
                     <span className="text-lg font-semibold">{character.favorites.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <FaTheaterMasks className="text-blue-400 w-4 h-4" />
-                    <span className="text-sm">{character.details?.anime?.length || 0}</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -182,33 +159,17 @@ export default function TopCharacters() {
                   {character.name}
                 </h3>
 
-                {character.details?.nicknames && character.details.nicknames.length > 0 && (
+                {character.nicknames && character.nicknames.length > 0 && (
                   <p className="text-sm text-gray-400 mb-4 line-clamp-1">
-                    aka {character.details.nicknames.join(", ")}
+                    aka {character.nicknames.join(", ")}
                   </p>
                 )}
 
-                {character.details?.about && (
+                {character.about && (
                   <p className="text-sm text-gray-400 line-clamp-3 mb-4">
-                    {character.details.about}
+                    {character.about}
                   </p>
                 )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  {character.details?.anime && character.details.anime.length > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <FaTv className="w-4 h-4" />
-                      <span>{character.details.anime.length} Anime</span>
-                    </div>
-                  )}
-                  
-                  {character.details?.manga && character.details.manga.length > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <FaFilm className="w-4 h-4" />
-                      <span>{character.details.manga.length} Manga</span>
-                    </div>
-                  )}
-                </div>
               </div>
             </Link>
           </motion.div>
