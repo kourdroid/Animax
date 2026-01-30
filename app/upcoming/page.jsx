@@ -290,8 +290,9 @@ export default function Upcoming() {
       </motion.div>
 
       {isLoading && (
-        <div className="flex justify-center items-center mt-8">
+        <div className="flex justify-center items-center mt-8" role="status">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+          <span className="sr-only">Loading more upcoming anime...</span>
         </div>
       )}
 
