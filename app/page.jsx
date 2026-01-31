@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
+import { FaStar, FaArrowUp, FaPlay, FaCalendar, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -185,18 +185,31 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
                 
                 {anime.trailer_url && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setActiveTrailer(activeTrailer === anime.mal_id ? null : anime.mal_id);
-                    }}
-                    className="absolute inset-0 flex items-center justify-center"
-                    aria-label={activeTrailer === anime.mal_id ? "Close trailer" : "Play trailer"}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
-                      <FaPlay className={`${activeTrailer === anime.mal_id ? 'hidden' : ''} text-white text-xl`} />
-                    </div>
-                  </button>
+                  activeTrailer === anime.mal_id ? (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTrailer(null);
+                      }}
+                      className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-sm transition-colors z-20"
+                      aria-label="Close trailer"
+                    >
+                      <FaTimes className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setActiveTrailer(anime.mal_id);
+                      }}
+                      className="absolute inset-0 flex items-center justify-center"
+                      aria-label="Play trailer"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                        <FaPlay className="text-white text-xl ml-1" />
+                      </div>
+                    </button>
+                  )
                 )}
               </div>
 
