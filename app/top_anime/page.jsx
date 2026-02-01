@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { FaStar, FaPlay, FaTrophy, FaHeart, FaEye, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function TopAnime() {
   const [animeData, setAnimeData] = useState([]);
@@ -249,7 +250,7 @@ export default function TopAnime() {
       {/* Loading Spinner */}
       {isLoading && (
         <div className="flex justify-center mt-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <LoadingSpinner />
         </div>
       )}
     </div>

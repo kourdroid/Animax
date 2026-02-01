@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function Home() {
   const [animeData, setAnimeData] = useState([]);
@@ -40,6 +41,7 @@ export default function Home() {
   );
 
   const fetchData = async (page = 1) => {
+    setIsLoading(true);
     try {
       const response = await fetch(
         `https://api.jikan.moe/v4/top/anime?page=${page}`
@@ -251,7 +253,7 @@ export default function Home() {
       
       {isLoading && (
         <div className="flex justify-center mt-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <LoadingSpinner />
         </div>
       )}
 

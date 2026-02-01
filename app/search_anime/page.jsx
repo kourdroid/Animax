@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaSearch, FaStar } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 function Search() {
   const [query, setQuery] = useState("");
@@ -95,7 +96,7 @@ function Search() {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center my-20 gap-4"
             >
-              <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+              <LoadingSpinner size="large" className="border-red-600 border-t-transparent border-4" />
               <p className="text-white/50 animate-pulse">Searching for anime...</p>
             </motion.div>
           ) : results.length > 0 ? (
