@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function Upcoming() {
   const [animeData, setAnimeData] = useState([]);
@@ -57,6 +58,7 @@ export default function Upcoming() {
   );
 
   const fetchData = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(
         `https://api.jikan.moe/v4/seasons/upcoming?page=${page}`
@@ -291,7 +293,7 @@ export default function Upcoming() {
 
       {isLoading && (
         <div className="flex justify-center items-center mt-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+          <LoadingSpinner className="border-red-500" />
         </div>
       )}
 
