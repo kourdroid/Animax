@@ -77,6 +77,7 @@ function Search() {
             <div className="relative">
               <input
                 type="text"
+                aria-label="Search anime"
                 placeholder="Search for anime..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -94,6 +95,7 @@ function Search() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center my-20 gap-4"
+              role="status"
             >
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
               <p className="text-white/50 animate-pulse">Searching for anime...</p>
@@ -111,7 +113,7 @@ function Search() {
                   variants={item}
                   className="group relative bg-gradient-to-b from-gray-900/50 to-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden">
+                  <Link href={result.mal_id.toString()} className="relative block aspect-[3/4] overflow-hidden">
                     <Image
                       src={result.images.webp.large_image_url}
                       alt={result.title}
@@ -136,7 +138,7 @@ function Search() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
 
                   <Link href={result.mal_id.toString()}>
                     <div className="p-6">
