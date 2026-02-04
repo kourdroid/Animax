@@ -78,6 +78,7 @@ function Search() {
               <input
                 type="text"
                 placeholder="Search for anime..."
+                aria-label="Search for anime"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full h-14 px-6 pr-12 text-white bg-black/50 rounded-full outline-none border border-white/10 focus:border-red-500 transition-all duration-300 backdrop-blur-sm"
@@ -94,6 +95,8 @@ function Search() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center my-20 gap-4"
+              role="status"
+              aria-live="polite"
             >
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
               <p className="text-white/50 animate-pulse">Searching for anime...</p>
@@ -111,34 +114,34 @@ function Search() {
                   variants={item}
                   className="group relative bg-gradient-to-b from-gray-900/50 to-gray-900/30 backdrop-blur-sm rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300"
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden">
-                    <Image
-                      src={result.images.webp.large_image_url}
-                      alt={result.title}
-                      width={300}
-                      height={400}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
-                    
-                    {/* Quick Stats Overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent">
-                      <div className="flex items-center justify-between mb-2">
-                        {result.score && (
-                          <div className="flex items-center space-x-2">
-                            <FaStar className="text-yellow-400 w-5 h-5" />
-                            <span className="text-lg font-semibold">{result.score}</span>
+                  <Link href={result.mal_id.toString()} className="block h-full">
+                    <div className="relative aspect-[3/4] overflow-hidden">
+                      <Image
+                        src={result.images.webp.large_image_url}
+                        alt={result.title}
+                        width={300}
+                        height={400}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+
+                      {/* Quick Stats Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent">
+                        <div className="flex items-center justify-between mb-2">
+                          {result.score && (
+                            <div className="flex items-center space-x-2">
+                              <FaStar className="text-yellow-400 w-5 h-5" />
+                              <span className="text-lg font-semibold">{result.score}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center space-x-2 text-sm">
+                            <span>{result.type}</span>
+                            {result.episodes && <span>• {result.episodes} eps</span>}
                           </div>
-                        )}
-                        <div className="flex items-center space-x-2 text-sm">
-                          <span>{result.type}</span>
-                          {result.episodes && <span>• {result.episodes} eps</span>}
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <Link href={result.mal_id.toString()}>
                     <div className="p-6">
                       <h3 className="font-bold text-xl mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                         {result.title}
