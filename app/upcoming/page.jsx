@@ -12,6 +12,7 @@ import {
   FaChevronUp
 } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function Upcoming() {
@@ -155,12 +156,13 @@ export default function Upcoming() {
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="w-full md:w-2/5">
                   <div className="relative aspect-[3/4] overflow-hidden rounded-lg group">
-                    <img
-                      className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    <Image
+                      className="object-cover transform group-hover:scale-110 transition-transform duration-500"
                       src={item.images.webp.large_image_url}
                       alt={item.title}
-                      width={300}
-                      height={400}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      priority={index < 4}
                     />
                     {item.trailer_url && (
                       <button

@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FaStar, FaArrowUp, FaPlay, FaCalendar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -176,9 +177,12 @@ export default function Home() {
                     title={`${anime.title} Trailer`}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={anime.images.jpg.large_image_url}
                     alt={anime.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={index < 6}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
                 )}
