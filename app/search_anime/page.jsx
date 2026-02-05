@@ -77,6 +77,7 @@ function Search() {
             <div className="relative">
               <input
                 type="text"
+                aria-label="Search for anime"
                 placeholder="Search for anime..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -90,6 +91,8 @@ function Search() {
         <AnimatePresence mode="wait">
           {isLoading ? (
             <motion.div
+              role="status"
+              aria-live="polite"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -153,6 +156,8 @@ function Search() {
             </motion.div>
           ) : query.trim() !== "" && (
             <motion.div
+              role="status"
+              aria-live="polite"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
