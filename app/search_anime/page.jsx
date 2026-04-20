@@ -97,6 +97,7 @@ function Search() {
               role="status"
               aria-live="polite"
               className="flex flex-col items-center justify-center my-20 gap-4"
+              role="status"
             >
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
               <p className="text-white/50 animate-pulse">Searching for anime...</p>
